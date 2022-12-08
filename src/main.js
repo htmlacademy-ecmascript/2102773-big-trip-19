@@ -3,13 +3,13 @@ import { render, RenderPosition } from './render.js';
 import BoardPresenter from './presenter/board-presenter.js';
 import TripInfoView from './view/trip-info-view.js';
 
-const siteBodyElement = document.querySelector('.page-body');
-const siteFiltersElement = siteBodyElement.querySelector('.trip-controls__filters');
-const siteSortElement = siteBodyElement.querySelector('.trip-events');
-const boardPresenter = new BoardPresenter({boardContainer: siteSortElement});
-const siteTripInfoElement = siteBodyElement.querySelector('.trip-main');
+const bodyElement = document.querySelector('.page-body');
+const filtersElement = bodyElement.querySelector('.trip-controls__filters');
+const sortElement = bodyElement.querySelector('.trip-events');
+const tripInfoElement = bodyElement.querySelector('.trip-main');
+const boardPresenter = new BoardPresenter({boardContainer: sortElement});
 
-render(new TripInfoView(), siteTripInfoElement, RenderPosition.AFTERBEGIN);
-render(new FiltersView(), siteFiltersElement);
+render(new TripInfoView(), tripInfoElement, RenderPosition.AFTERBEGIN);
+render(new FiltersView(), filtersElement);
 
 boardPresenter.init();

@@ -5,6 +5,8 @@ import TripPointView from '../view/trip-point-view.js';
 import SortView from '../view/sort-view.js';
 import { render } from '../render.js';
 
+const TRIP_POINTS_COUNT = 3;
+
 export default class BoardPresenter {
   boardComponent = new TripEventsView();
 
@@ -17,7 +19,7 @@ export default class BoardPresenter {
     render(this.boardComponent, this.boardContainer);
     render(new EditFormView(), this.boardComponent.getElement());
 
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < TRIP_POINTS_COUNT; i++) {
       render(new TripPointView(), this.boardComponent.getElement());
     }
 

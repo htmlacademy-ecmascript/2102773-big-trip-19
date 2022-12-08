@@ -1,6 +1,6 @@
 import {createElement} from '../render.js';
 
-function createFiltersTemplate() {
+function createSortTemplate() {
 
   return (`<form class="trip-events__trip-sort  trip-sort" action="#" method="get">
   <div class="trip-sort__item  trip-sort__item--day">
@@ -33,7 +33,7 @@ function createFiltersTemplate() {
 
 export default class SortView {
   getTemplate() {
-    return createFiltersTemplate();
+    return createSortTemplate();
   }
 
   getElement() {

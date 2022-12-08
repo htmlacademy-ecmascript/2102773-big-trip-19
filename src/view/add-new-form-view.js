@@ -1,6 +1,6 @@
 import {createElement} from '../render.js';
 
-function createFiltersTemplate() {
+function createNewFormTemplate() {
 
   return (`<li class="trip-events__item">
   <form class="event event--edit" action="#" method="post">
@@ -169,7 +169,7 @@ function createFiltersTemplate() {
 
 export default class AddNewFormView {
   getTemplate() {
-    return createFiltersTemplate();
+    return createNewFormTemplate();
   }
 
   getElement() {

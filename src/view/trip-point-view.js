@@ -1,6 +1,6 @@
 import {createElement} from '../render.js';
 
-function createFiltersTemplate() {
+function createTripPointTemplate() {
 
   return (`<li class="trip-events__item">
   <div class="event">
@@ -44,7 +44,7 @@ function createFiltersTemplate() {
 
 export default class TripPointView {
   getTemplate() {
-    return createFiltersTemplate();
+    return createTripPointTemplate();
   }
 
   getElement() {
