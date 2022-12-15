@@ -1,9 +1,9 @@
-import { getRandomArrayElement, getRandomIntegerInclusive } from './utils.js';
-import { POINT_TYPE } from './const.js';
+import { getRandomArrayElement, getRandomIntegerInclusive } from '../utils.js';
+import { POINT_TYPES } from './const.js';
 
 const mockOffersByType = [
   {
-    type: getRandomArrayElement(POINT_TYPE),
+    type: getRandomArrayElement(POINT_TYPES),
     offers: [
       {
         id: '1',
@@ -28,7 +28,7 @@ const mockOffersByType = [
     ]
   },
   {
-    type: getRandomArrayElement(POINT_TYPE),
+    type: getRandomArrayElement(POINT_TYPES),
     offers: [
       {
         id: '1',
@@ -53,7 +53,7 @@ const mockOffersByType = [
     ]
   },
   {
-    type: getRandomArrayElement(POINT_TYPE),
+    type: getRandomArrayElement(POINT_TYPES),
     offers: [
       {
         id: '1',
@@ -78,7 +78,7 @@ const mockOffersByType = [
     ]
   },
   {
-    type: getRandomArrayElement(POINT_TYPE),
+    type: getRandomArrayElement(POINT_TYPES),
     offers: [
       {
         id: '1',
@@ -98,7 +98,7 @@ const mockOffersByType = [
     ]
   },
   {
-    type: getRandomArrayElement(POINT_TYPE),
+    type: getRandomArrayElement(POINT_TYPES),
     offers: [
       {
         id: '1',
@@ -116,49 +116,16 @@ const mockOffersByType = [
 
 const mockOffers = [
   {
-    type: getRandomArrayElement(POINT_TYPE),
-    offers: [
-      {
-        id: '1',
-        title: 'предложение 1',
-        price: getRandomIntegerInclusive(10, 1000),
-      },
-      {
-        id: '2',
-        title: 'предложение 2',
-        price: getRandomIntegerInclusive(10, 1000),
-      },
-    ]
+    type: getRandomArrayElement(POINT_TYPES),
+    id: ['1', '3']
   },
   {
-    type: getRandomArrayElement(POINT_TYPE),
-    offers: [
-      {
-        id: '1',
-        title: 'предложение 5',
-        price: getRandomIntegerInclusive(10, 1000),
-      },
-    ]
+    type: getRandomArrayElement(POINT_TYPES),
+    id: ['2']
   },
   {
-    type: getRandomArrayElement(POINT_TYPE),
-    offers: [
-      {
-        id: '1',
-        title: 'предложение 9',
-        price: getRandomIntegerInclusive(10, 1000),
-      },
-      {
-        id: '2',
-        title: 'предложение 10',
-        price: getRandomIntegerInclusive(10, 1000),
-      },
-      {
-        id: '3',
-        title: 'предложение 11',
-        price: getRandomIntegerInclusive(10, 1000),
-      },
-    ]
+    type: getRandomArrayElement(POINT_TYPES),
+    id: ['1', '2', '3']
   },
 ];
 
@@ -255,7 +222,7 @@ const mockPoints = [
     id: '1',
     isFavorite: false,
     offers: mockOffers,
-    type: getRandomArrayElement(POINT_TYPE),
+    type: getRandomArrayElement(POINT_TYPES),
   },
 
   {
@@ -266,7 +233,7 @@ const mockPoints = [
     id: '2',
     isFavorite: false,
     offers: mockOffers,
-    type: getRandomArrayElement(POINT_TYPE),
+    type: getRandomArrayElement(POINT_TYPES),
   },
 
   {
@@ -277,7 +244,7 @@ const mockPoints = [
     id: '3',
     isFavorite: true,
     offers: mockOffers,
-    type: getRandomArrayElement(POINT_TYPE),
+    type: getRandomArrayElement(POINT_TYPES),
   },
 ];
 

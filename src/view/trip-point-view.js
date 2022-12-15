@@ -1,28 +1,32 @@
 import {createElement} from '../render.js';
-import {humanizePointDate, humanizePointTime, calculateTimeDifference} from '../mock/utils.js';
+import {humanizePointDate, humanizePointTime, calculateTimeDifference} from '../utils.js';
+import { mockOffersByType } from '../mock/data.js';
 
 function createTripPointTemplate(point) {
 
   const pointTypeOffer = point.offers.find((offer) => offer.type === point.type);
-  const pointTypeDestanation = point.destinations.find((destination) => destination.id === point.id);
-  const pointName = pointTypeDestanation.name;
+  const pointTypeDestination = point.destinations.find((destination) => destination.id === point.id);
+  const pointTypeAllOffers = mockOffersByType.find((offer) => offer.type === point.type);
+  const pointName = pointTypeDestination.name;
   const {type, dateFrom, dateTo, basePrice, isFavorite} = point;
 
-  function isOffer () {
-    if (pointTypeOffer !== undefined) {
-      const pointOffers = pointTypeOffer.offers;
-      return pointOffers.map(({title, price}) =>
-        (`<li class="event__offer">
-              <span class="event__offer-title">${title}</span>
-                &plus;&euro;&nbsp;
-              <span class="event__offer-price">${price}</span>
-          </li>`
-        )).join('');
+
+  function createOffer () {
+    if (pointTypeAllOffers && pointTypeOffer !== undefined) {
+      return pointTypeAllOffers.offers.map(({title, price, id}) => {
+        if (pointTypeOffer.id.includes(id)) {return (`<li class="event__offer">
+        <span class="event__offer-title">${title}</span>
+        &plus;&euro;&nbsp;
+        <span class="event__offer-price">${price}</span>
+        </li>`);
+        }
+      }
+      ).join('');
     }
-    else {return (`<li class="event__offer">
-      <span class="event__offer-title">${'Нет опций'}</span>
-         &plus;&euro;&nbsp;
-      <span class="event__offer-price">${'0'}</span>
+    else { return (`<li class="event__offer">
+    <span class="event__offer-title">${'Нет опций'}</span>
+    &plus;&euro;&nbsp;
+    <span class="event__offer-price">${'0'}</span>
     </li>`);
     }
   }
@@ -53,7 +57,7 @@ function createTripPointTemplate(point) {
     </p>
     <h4 class="visually-hidden">Offers:</h4>
     <ul class="event__selected-offers">
-    ${isOffer()}
+    ${createOffer()}
     </ul>
     <button class="event__favorite-btn ${favorite}" type="button">
       <span class="visually-hidden">Add to favorite</span>

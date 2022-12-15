@@ -1,13 +1,13 @@
 import { createElement } from '../render.js';
-import { humanizePointAddDate } from '../mock/utils.js';
-import { POINT_TYPE } from '../mock/const.js';
+import { humanizePointAddDate } from '../utils.js';
+import { POINT_TYPES } from '../mock/const.js';
 import { mockOffersByType } from '../mock/data.js';
 
 function createEditFormTemplate(point) {
 
-  const pointTypeDestanation = point.destinations.find((destination) => destination.id === point.id);
-  const pointName = pointTypeDestanation.name;
-  const pointDescription = pointTypeDestanation.description;
+  const pointTypeDestination = point.destinations.find((destination) => destination.id === point.id);
+  const pointName = pointTypeDestination.name;
+  const pointDescription = pointTypeDestination.description;
   const pointTypeAllOffers = mockOffersByType.find((offer) => offer.type === point.type);
   const pointTypeOffer = point.offers.find((offer) => offer.type === point.type);
 
@@ -15,36 +15,6 @@ function createEditFormTemplate(point) {
 
   const dateStart = humanizePointAddDate(dateFrom);
   const dateEnd = humanizePointAddDate(dateTo);
-
-  function createType () {
-    return POINT_TYPE.map((typeOfList) =>
-      (`<div class="event__type-item">
-        <input id="event-type-${typeOfList}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${typeOfList}">
-        <label class="event__type-label  event__type-label--${typeOfList}" for="event-type-${typeOfList}-1">${typeOfList}</label>
-      </div>`
-      )).join('');
-  }
-
-  function createOffer () {
-    if (pointTypeAllOffers && pointTypeOffer !== undefined) {
-      const checkedOffers = pointTypeOffer.offers.map((offer) => offer.id);
-      return pointTypeAllOffers.offers.map(({title, price, id}) => {
-        const checked = checkedOffers.includes(id) ? 'checked' : '';
-        return (`<div class="event__offer-selector">
-        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${id}-2" type="checkbox" name="event-offer-${id}" ${checked}>
-        <label class="event__offer-label" for="event-offer-${id}-2">
-          <span class="event__offer-title">${title}</span>
-          &plus;&euro;&nbsp;
-          <span class="event__offer-price">${price}</span>
-        </label>
-      </div>`);
-      }
-      ).join('');
-
-    }
-    else {return ('');
-    }
-  }
 
   function createDestination () {
     return pointDescription ? (`<section class="event__section  event__section--destination">
@@ -57,7 +27,18 @@ function createEditFormTemplate(point) {
     return pointTypeAllOffers && pointTypeOffer ? (`<section class="event__section  event__section--offers">
     <h3 class="event__section-title  event__section-title--offers">Offers</h3>
     <div class="event__available-offers">
-    ${createOffer()}
+    ${pointTypeAllOffers.offers.map(({title, price, id}) => {
+        const checked = pointTypeOffer.id.includes(id) ? 'checked' : '';
+        return (`<div class="event__offer-selector">
+      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${id}-2" type="checkbox" name="event-offer-${id}" ${checked}>
+      <label class="event__offer-label" for="event-offer-${id}-2">
+        <span class="event__offer-title">${title}</span>
+        &plus;&euro;&nbsp;
+        <span class="event__offer-price">${price}</span>
+      </label>
+    </div>`);
+      }
+      ).join('')}
     </div>
   </section>`) : '';
   }
@@ -74,7 +55,12 @@ function createEditFormTemplate(point) {
       <div class="event__type-list">
         <fieldset class="event__type-group">
           <legend class="visually-hidden">Event type</legend>
-          ${createType()}
+          ${POINT_TYPES.map((typeOfList) =>
+        (`<div class="event__type-item">
+              <input id="event-type-${typeOfList}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${typeOfList}">
+              <label class="event__type-label  event__type-label--${typeOfList}" for="event-type-${typeOfList}-1">${typeOfList}</label>
+            </div>`
+        )).join('')}
         </fieldset>
       </div>
     </div>
