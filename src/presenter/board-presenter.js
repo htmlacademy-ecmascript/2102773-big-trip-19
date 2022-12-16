@@ -5,24 +5,25 @@ import TripPointView from '../view/trip-point-view.js';
 import SortView from '../view/sort-view.js';
 import { render } from '../render.js';
 
-const TRIP_POINTS_COUNT = 3;
-
 export default class BoardPresenter {
   boardComponent = new TripEventsView();
 
-  constructor({boardContainer}) {
+  constructor({boardContainer, pointsModel}) {
     this.boardContainer = boardContainer;
+    this.pointsModel = pointsModel;
   }
 
   init() {
+    this.boardPoints = [...this.pointsModel.getPoints()];
+
     render(new SortView(), this.boardComponent.getElement());
     render(this.boardComponent, this.boardContainer);
-    render(new EditFormView(), this.boardComponent.getElement());
+    render(new EditFormView({point: this.boardPoints[0]}), this.boardComponent.getElement());
 
-    for (let i = 0; i < TRIP_POINTS_COUNT; i++) {
-      render(new TripPointView(), this.boardComponent.getElement());
+    for (let i = 1; i < this.boardPoints.length; i++) {
+      render(new TripPointView({point: this.boardPoints[i]}), this.boardComponent.getElement());
     }
 
-    render(new AddNewFormView(), this.boardComponent.getElement());
+    render(new AddNewFormView({point: this.boardPoints[3]}), this.boardComponent.getElement());
   }
 }
