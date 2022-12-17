@@ -1,29 +1,87 @@
-import AddNewFormView from '../view/add-new-form-view.js';
 import EditFormView from '../view/edit-form-view.js';
 import TripEventsView from '../view/trip-events-list-view.js';
 import TripPointView from '../view/trip-point-view.js';
 import SortView from '../view/sort-view.js';
-import { render } from '../render.js';
+import ListEmptyView from '../view/list-empty-view.js';
+import FiltersView from '../view/filters-view.js';
+import TripInfoView from '../view/trip-info-view.js';
+import { render, RenderPosition } from '../render.js';
 
 export default class BoardPresenter {
-  boardComponent = new TripEventsView();
+  #filterContainer = null;
+  #infoContainer = null;
+  #boardContainer = null;
+  #pointsModel = null;
 
-  constructor({boardContainer, pointsModel}) {
-    this.boardContainer = boardContainer;
-    this.pointsModel = pointsModel;
+  #boardComponent = new TripEventsView();
+
+  #boardPoints = [];
+
+  constructor({infoContainer, filterContainer, boardContainer, pointsModel}) {
+    this.#infoContainer = infoContainer;
+    this.#filterContainer = filterContainer;
+    this.#boardContainer = boardContainer;
+    this.#pointsModel = pointsModel;
   }
 
   init() {
-    this.boardPoints = [...this.pointsModel.getPoints()];
+    this.#boardPoints = [...this.#pointsModel.points];
+    this.#renderBoard();
+  }
 
-    render(new SortView(), this.boardComponent.getElement());
-    render(this.boardComponent, this.boardContainer);
-    render(new EditFormView({point: this.boardPoints[0]}), this.boardComponent.getElement());
+  #renderTripPoint(point) {
+    const tripPointComponent = new TripPointView({point});
+    const tripEditFormComponent = new EditFormView({point});
 
-    for (let i = 1; i < this.boardPoints.length; i++) {
-      render(new TripPointView({point: this.boardPoints[i]}), this.boardComponent.getElement());
+    const replacePointToForm = () => {
+      this.#boardComponent.element.replaceChild(tripEditFormComponent.element, tripPointComponent.element);
+    };
+
+    const replaceFormToPoint = () => {
+      this.#boardComponent.element.replaceChild(tripPointComponent.element, tripEditFormComponent.element);
+    };
+
+    const escKeyDownHandler = (evt) => {
+      if (evt.key === 'Escape' || evt.key === 'Esc') {
+        evt.preventDefault();
+        replaceFormToPoint();
+        document.removeEventListener('keydown', escKeyDownHandler);
+      }
+    };
+
+    tripPointComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
+      replacePointToForm();
+      document.addEventListener('keydown', escKeyDownHandler);
+    });
+
+    tripEditFormComponent.element.querySelector('form').addEventListener('submit', (evt) => {
+      evt.preventDefault();
+      replaceFormToPoint();
+      document.removeEventListener('keydown', escKeyDownHandler);
+    });
+
+    tripEditFormComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
+      replaceFormToPoint();
+      document.removeEventListener('keydown', escKeyDownHandler);
+    });
+
+    render (tripPointComponent, this.#boardComponent.element);
+  }
+
+  #renderBoard() {
+    render(new FiltersView(), this.#filterContainer);
+
+    if (this.#boardPoints.every((point) => point === {})) {
+      render(new ListEmptyView(), this.#boardContainer);
+      return;
     }
 
-    render(new AddNewFormView({point: this.boardPoints[3]}), this.boardComponent.getElement());
+    render(new TripInfoView(), this.#infoContainer, RenderPosition.AFTERBEGIN);
+    render(new SortView(), this.#boardComponent.element);
+    render(this.#boardComponent, this.#boardContainer);
+
+    for (let i = 0; i < this.#boardPoints.length; i++) {
+      this.#renderTripPoint(this.#boardPoints[i]);
+    }
   }
 }

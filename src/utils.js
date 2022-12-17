@@ -6,7 +6,7 @@ dayjs.extend(duration);
 
 const DATE_FORMAT = 'MMM DD';
 const TIME_FORMAT = 'HH:mm';
-const DIFF_TIME_FORMAT = 'DD[D] HH[H] mm[M]';
+//const DIFF_TIME_FORMAT = 'DD[d] HH[h] MM[m]';
 const DATE_FORMAT_ADD = 'DD/MM/YY HH:mm';
 
 function getRandomIntegerInclusive(min, max) {
@@ -30,8 +30,8 @@ function humanizePointTime(time) {
 }
 
 function calculateTimeDifference(time1, time2) {
-  const x = dayjs(time1, DIFF_TIME_FORMAT);
-  const y = dayjs(time2, DIFF_TIME_FORMAT);
+  const x = dayjs(time1).format();
+  const y = dayjs(time2).format();
   const diff = dayjs.preciseDiff(x, y);
   return time1 && time2 ? diff : '';
 }
