@@ -71,7 +71,7 @@ export default class BoardPresenter {
   #renderBoard() {
     render(new FiltersView(), this.#filterContainer);
 
-    if (this.#boardPoints.every((point) => point === {})) {
+    if (this.#boardPoints.every((point) => point === null)) {
       render(new ListEmptyView(), this.#boardContainer);
       return;
     }
@@ -80,8 +80,6 @@ export default class BoardPresenter {
     render(new SortView(), this.#boardComponent.element);
     render(this.#boardComponent, this.#boardContainer);
 
-    for (let i = 0; i < this.#boardPoints.length; i++) {
-      this.#renderTripPoint(this.#boardPoints[i]);
-    }
+    this.#boardPoints.forEach((boardPoint) => this.#renderTripPoint(boardPoint));
   }
 }
