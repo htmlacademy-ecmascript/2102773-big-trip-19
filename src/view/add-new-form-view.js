@@ -130,22 +130,25 @@ function createNewFormTemplate(point) {
 }
 
 export default class AddNewFormView {
+  #element = null;
+  #point = null;
+
   constructor ({point}) {
-    this.point = point;
+    this.#point = point;
   }
 
-  getTemplate() {
-    return createNewFormTemplate(this.point);
+  get template() {
+    return createNewFormTemplate(this.#point);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
     }
-    return this.element;
+    return this.#element;
   }
 
   removeElement() {
-    this.element = null;
+    this.#element = null;
   }
 }
