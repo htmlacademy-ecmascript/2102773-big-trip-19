@@ -1,4 +1,4 @@
-import { getRandomArrayElement, getRandomIntegerInclusive } from '../utils.js';
+import { getRandomArrayElement, getRandomIntegerInclusive } from '../utils/common.js';
 import { POINT_TYPES } from './const.js';
 
 const mockOffersByType = [
@@ -216,8 +216,8 @@ const mockDestinations = [
 const mockPoints = [
   {
     basePrice: getRandomIntegerInclusive(10, 1000),
-    dateFrom: new Date('2019-07-10T12:15:56'),
-    dateTo: new Date('2019-07-11T14:25:56'),
+    dateFrom: new Date('2022-12-23T12:15:56'),
+    dateTo: new Date('2022-12-25T14:25:56'),
     destinations: mockDestinations,
     id: '1',
     isFavorite: false,
@@ -238,8 +238,8 @@ const mockPoints = [
 
   {
     basePrice: getRandomIntegerInclusive(10, 1000),
-    dateFrom: new Date('2021-08-01T10:20:56'),
-    dateTo: new Date('2021-08-10T11:30:56'),
+    dateFrom: new Date('2023-08-01T10:20:56'),
+    dateTo: new Date('2023-08-10T11:30:56'),
     destinations: mockDestinations,
     id: '3',
     isFavorite: true,
