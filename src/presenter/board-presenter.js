@@ -80,7 +80,7 @@ export default class BoardPresenter {
       return;
     }
 
-    render(new TripInfoView(), this.#infoContainer, RenderPosition.AFTERBEGIN);
+    render(new TripInfoView({point: this.#boardPoints}), this.#infoContainer, RenderPosition.AFTERBEGIN);
     render(new SortView(), this.#boardComponent.element);
     render(this.#boardComponent, this.#boardContainer);
     this.#boardPoints.forEach((boardPoint) => this.#renderTripPoint(boardPoint));

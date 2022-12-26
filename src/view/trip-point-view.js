@@ -21,12 +21,11 @@ function createTripPointTemplate(point) {
       }
       ).join('');
     }
-    else { return (`<li class="event__offer">
+    return (`<li class="event__offer">
     <span class="event__offer-title">${'Нет опций'}</span>
     &plus;&euro;&nbsp;
     <span class="event__offer-price">${'0'}</span>
     </li>`);
-    }
   }
 
   const dateStart = humanizePointDate(dateFrom);
