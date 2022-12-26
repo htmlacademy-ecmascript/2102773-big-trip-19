@@ -1,3 +1,4 @@
+import { render, RenderPosition } from '../framework/render.js';
 import EditFormView from '../view/edit-form-view.js';
 import TripEventsView from '../view/trip-events-list-view.js';
 import TripPointView from '../view/trip-point-view.js';
@@ -5,7 +6,7 @@ import SortView from '../view/sort-view.js';
 import ListEmptyView from '../view/list-empty-view.js';
 import FiltersView from '../view/filters-view.js';
 import TripInfoView from '../view/trip-info-view.js';
-import { render, RenderPosition } from '../render.js';
+import { generateFilter } from '../mock/filter.js';
 
 export default class BoardPresenter {
   #filterContainer = null;
@@ -30,56 +31,58 @@ export default class BoardPresenter {
   }
 
   #renderTripPoint(point) {
-    const tripPointComponent = new TripPointView({point});
-    const tripEditFormComponent = new EditFormView({point});
-
-    const replacePointToForm = () => {
-      this.#boardComponent.element.replaceChild(tripEditFormComponent.element, tripPointComponent.element);
-    };
-
-    const replaceFormToPoint = () => {
-      this.#boardComponent.element.replaceChild(tripPointComponent.element, tripEditFormComponent.element);
-    };
 
     const escKeyDownHandler = (evt) => {
       if (evt.key === 'Escape' || evt.key === 'Esc') {
         evt.preventDefault();
-        replaceFormToPoint();
+        replaceFormToPoint.call(this);
         document.removeEventListener('keydown', escKeyDownHandler);
       }
     };
 
-    tripPointComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
-      replacePointToForm();
-      document.addEventListener('keydown', escKeyDownHandler);
+    const tripPointComponent = new TripPointView ({
+      point,
+      onEditClick: () => {
+        replacePointToForm.call(this);
+        document.addEventListener('keydown', escKeyDownHandler);
+      }
     });
 
-    tripEditFormComponent.element.querySelector('form').addEventListener('submit', (evt) => {
-      evt.preventDefault();
-      replaceFormToPoint();
-      document.removeEventListener('keydown', escKeyDownHandler);
+    const tripEditFormComponent = new EditFormView ({
+      point,
+      onFormSubmit: () => {
+        replaceFormToPoint.call(this);
+        document.removeEventListener('keydown', escKeyDownHandler);
+      },
+      onEditClick: () => {
+        replaceFormToPoint.call(this);
+        document.removeEventListener('keydown', escKeyDownHandler);
+      }
     });
 
-    tripEditFormComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
-      replaceFormToPoint();
-      document.removeEventListener('keydown', escKeyDownHandler);
-    });
+    function replacePointToForm() {
+      this.#boardComponent.element.replaceChild(tripEditFormComponent.element, tripPointComponent.element);
+    }
+
+    function replaceFormToPoint() {
+      this.#boardComponent.element.replaceChild(tripPointComponent.element, tripEditFormComponent.element);
+    }
 
     render (tripPointComponent, this.#boardComponent.element);
   }
 
   #renderBoard() {
-    render(new FiltersView(), this.#filterContainer);
+    const filters = generateFilter(this.#boardPoints);
+    render(new FiltersView({filters}), this.#filterContainer);
 
     if (this.#boardPoints.every((point) => point === null)) {
       render(new ListEmptyView(), this.#boardContainer);
       return;
     }
 
-    render(new TripInfoView(), this.#infoContainer, RenderPosition.AFTERBEGIN);
+    render(new TripInfoView({point: this.#boardPoints}), this.#infoContainer, RenderPosition.AFTERBEGIN);
     render(new SortView(), this.#boardComponent.element);
     render(this.#boardComponent, this.#boardContainer);
-
     this.#boardPoints.forEach((boardPoint) => this.#renderTripPoint(boardPoint));
   }
 }

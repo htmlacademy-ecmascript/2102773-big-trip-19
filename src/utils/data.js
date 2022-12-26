@@ -1,24 +1,18 @@
 import dayjs from 'dayjs';
 import preciseDiff from 'dayjs-precise-range';
 import duration from 'dayjs/plugin/duration.js';
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
+import isSameOrAfter from 'dayjs/plugin/isSameOrAfter.js';
 dayjs.extend(preciseDiff);
 dayjs.extend(duration);
+dayjs.extend(isSameOrBefore);
+dayjs.extend(isSameOrAfter);
 
 const DATE_FORMAT = 'MMM DD';
 const TIME_FORMAT = 'HH:mm';
 const DATE_FORMAT_ADD = 'DD/MM/YY HH:mm';
 
-function getRandomIntegerInclusive(min, max) {
-  const lower = Math.ceil(Math.min(min, max));
-  const upper = Math.floor(Math.max(min, max));
-  if (min < 0 || max < 0) {
-    return NaN;
-  }
-  const result = Math.random() * (upper - lower + 1) + lower;
-  return Math.floor(result);
-}
-
-const getRandomArrayElement = (elements) => elements[getRandomIntegerInclusive(0, elements.length - 1)];
+const today = dayjs();
 
 function humanizePointDate(date) {
   return date ? dayjs(date).format(DATE_FORMAT) : '';
@@ -39,4 +33,16 @@ function humanizePointAddDate(date) {
   return date ? dayjs(date).format(DATE_FORMAT_ADD) : '';
 }
 
-export {getRandomArrayElement, getRandomIntegerInclusive, humanizePointDate, humanizePointTime, calculateTimeDifference, humanizePointAddDate};
+function isPointPresent(dateFrom, dateTo) {
+  return dateFrom && dateTo && dayjs(dateFrom).isSameOrBefore(today) && dayjs(dateTo).isSameOrAfter(today);
+}
+
+function isPointPast(dateTo) {
+  return dateTo && dayjs(dateTo).isBefore(today);
+}
+
+function isPointFuture(dateFrom) {
+  return dateFrom && dayjs(dateFrom).isAfter(today);
+}
+
+export {humanizePointDate, humanizePointTime, calculateTimeDifference, humanizePointAddDate, isPointPresent, isPointPast, isPointFuture};

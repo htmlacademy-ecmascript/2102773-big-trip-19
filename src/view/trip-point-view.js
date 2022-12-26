@@ -1,15 +1,13 @@
-import {createElement} from '../render.js';
-import {humanizePointDate, humanizePointTime, calculateTimeDifference} from '../utils.js';
+import AbstractView from '../framework/view/abstract-view.js';
+import {humanizePointDate, humanizePointTime, calculateTimeDifference} from '../utils/data.js';
 import { mockOffersByType } from '../mock/data.js';
 
 function createTripPointTemplate(point) {
-
   const pointTypeOffer = point.offers.find((offer) => offer.type === point.type);
   const pointTypeDestination = point.destinations.find((destination) => destination.id === point.id);
   const pointTypeAllOffers = mockOffersByType.find((offer) => offer.type === point.type);
   const pointName = pointTypeDestination.name;
   const {type, dateFrom, dateTo, basePrice, isFavorite} = point;
-
 
   function createOffer () {
     if (pointTypeAllOffers && pointTypeOffer !== undefined) {
@@ -23,12 +21,11 @@ function createTripPointTemplate(point) {
       }
       ).join('');
     }
-    else { return (`<li class="event__offer">
+    return (`<li class="event__offer">
     <span class="event__offer-title">${'Нет опций'}</span>
     &plus;&euro;&nbsp;
     <span class="event__offer-price">${'0'}</span>
     </li>`);
-    }
   }
 
   const dateStart = humanizePointDate(dateFrom);
@@ -72,26 +69,24 @@ function createTripPointTemplate(point) {
   </li>`);
 }
 
-export default class TripPointView {
-  #element = null;
+export default class TripPointView extends AbstractView {
   #point = null;
+  #handleEditClick = null;
 
-  constructor ({point}) {
+  constructor ({point, onEditClick}) {
+    super();
     this.#point = point;
+    this.#handleEditClick = onEditClick;
+
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#editClickHandler);
   }
 
   get template() {
     return createTripPointTemplate(this.#point);
   }
 
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
-  }
+  #editClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleEditClick();
+  };
 }

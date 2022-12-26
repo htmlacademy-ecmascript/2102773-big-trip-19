@@ -1,5 +1,5 @@
-import { createElement } from '../render.js';
-import { humanizePointAddDate } from '../utils.js';
+import AbstractView from '../framework/view/abstract-view.js';
+import { humanizePointAddDate } from '../utils/data.js';
 import { POINT_TYPES } from '../mock/const.js';
 import { mockOffersByType } from '../mock/data.js';
 
@@ -129,26 +129,15 @@ function createNewFormTemplate(point) {
   );
 }
 
-export default class AddNewFormView {
-  #element = null;
+export default class AddNewFormView extends AbstractView {
   #point = null;
 
   constructor ({point}) {
+    super();
     this.#point = point;
   }
 
   get template() {
     return createNewFormTemplate(this.#point);
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }
