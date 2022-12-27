@@ -40,7 +40,6 @@ function createTripInfoTemplate(point) {
 }
 
 export default class TripInfoView extends AbstractView {
-
   #point = null;
 
   constructor ({point}) {
