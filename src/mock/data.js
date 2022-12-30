@@ -1,3 +1,4 @@
+import {nanoid} from 'nanoid';
 import { getRandomArrayElement, getRandomIntegerInclusive } from '../utils/common.js';
 import { POINT_TYPES } from './const.js';
 
@@ -216,10 +217,9 @@ const mockDestinations = [
 const mockPoints = [
   {
     basePrice: getRandomIntegerInclusive(10, 1000),
-    dateFrom: new Date('2022-12-23T12:15:56'),
-    dateTo: new Date('2022-12-25T14:25:56'),
-    destinations: mockDestinations,
-    id: '1',
+    dateFrom: new Date('2022-12-29T12:15:56'),
+    dateTo: new Date('2022-12-31T14:25:56'),
+    destinations: getRandomArrayElement(mockDestinations),
     isFavorite: false,
     offers: mockOffers,
     type: getRandomArrayElement(POINT_TYPES),
@@ -229,8 +229,7 @@ const mockPoints = [
     basePrice: getRandomIntegerInclusive(10, 1000),
     dateFrom: new Date('2020-05-15T15:30:56'),
     dateTo: new Date('2020-05-20T16:30:56'),
-    destinations: mockDestinations,
-    id: '2',
+    destinations: getRandomArrayElement(mockDestinations),
     isFavorite: false,
     offers: mockOffers,
     type: getRandomArrayElement(POINT_TYPES),
@@ -240,8 +239,7 @@ const mockPoints = [
     basePrice: getRandomIntegerInclusive(10, 1000),
     dateFrom: new Date('2023-08-01T10:20:56'),
     dateTo: new Date('2023-08-10T11:30:56'),
-    destinations: mockDestinations,
-    id: '3',
+    destinations: getRandomArrayElement(mockDestinations),
     isFavorite: true,
     offers: mockOffers,
     type: getRandomArrayElement(POINT_TYPES),
@@ -249,7 +247,10 @@ const mockPoints = [
 ];
 
 function getRandomPoint() {
-  return getRandomArrayElement(mockPoints);
+  return {
+    id: nanoid(),
+    ...getRandomArrayElement(mockPoints)
+  };
 }
 
 export { getRandomPoint, mockOffersByType };

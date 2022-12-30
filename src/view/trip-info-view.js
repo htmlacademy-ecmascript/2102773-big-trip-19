@@ -15,7 +15,7 @@ function createTripInfoTemplate(point) {
 
   const tripPointsName = [];
   for (let i = 0; i < point.length; i++) {
-    const pointTypeDestination = point[i].destinations.find((destination) => destination.id === point[i].id);
+    const pointTypeDestination = point[i].destinations;
     tripPointsName.push(pointTypeDestination.name);
   }
 

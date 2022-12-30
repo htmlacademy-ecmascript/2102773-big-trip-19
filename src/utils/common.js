@@ -10,4 +10,8 @@ function getRandomIntegerInclusive(min, max) {
 
 const getRandomArrayElement = (elements) => elements[getRandomIntegerInclusive(0, elements.length - 1)];
 
-export {getRandomArrayElement, getRandomIntegerInclusive};
+function updateItem(items, update) {
+  return items.map((item) => item.id === update.id ? update : item);
+}
+
+export {getRandomArrayElement, getRandomIntegerInclusive, updateItem};
