@@ -7,6 +7,8 @@ import TripInfoView from '../view/trip-info-view.js';
 import TripPointPresenter from './trip-point-presenter.js';
 import { generateFilter } from '../mock/filter.js';
 import { updateItem } from '../utils/common.js';
+import { sortPointByPrice, sortPointByTime, sortPointByDate } from '../utils/data.js';
+import { SortType } from '../mock/const.js';
 
 export default class BoardPresenter {
 
@@ -15,11 +17,13 @@ export default class BoardPresenter {
   #boardContainer = null;
   #pointsModel = null;
   #boardComponent = new TripEventsView();
-  #sortComponent = new SortView();
+  #sortComponent = null;
   #emptyListComponent = new ListEmptyView();
 
   #boardPoints = [];
   #pointPresenter = new Map();
+  #currentSortType = SortType.DEFAULT;
+  #sourcedBoardPoints = [];
 
   constructor({infoContainer, filterContainer, boardContainer, pointsModel}) {
     this.#infoContainer = infoContainer;
@@ -30,6 +34,7 @@ export default class BoardPresenter {
 
   init() {
     this.#boardPoints = [...this.#pointsModel.points];
+    this.#sourcedBoardPoints = [...this.#pointsModel.points];
     this.#renderBoard();
   }
 
@@ -39,10 +44,42 @@ export default class BoardPresenter {
 
   #handlePointChange = (updatedPoint) => {
     this.#boardPoints = updateItem(this.#boardPoints, updatedPoint);
+    this.#sourcedBoardPoints = updateItem(this.#sourcedBoardPoints, updatedPoint);
     this.#pointPresenter.get(updatedPoint.id).init(updatedPoint);
   };
 
+  #sortPoints(sortType) {
+    switch (sortType) {
+      case SortType.PRICE:
+        this.#boardPoints.sort(sortPointByPrice);
+        break;
+      case SortType.TIME:
+        this.#boardPoints.sort(sortPointByTime);
+        break;
+      case SortType.DEFAULT:
+        this.#boardPoints.sort(sortPointByDate);
+        break;
+      default:
+        this.#boardPoints = [...this.#sourcedBoardPoints];
+    }
+
+    this.#currentSortType = sortType;
+  }
+
+  #handleSortTypeChange = (sortType) => {
+    if (this.#currentSortType === sortType) {
+      return;
+    }
+
+    this.#sortPoints(sortType);
+    this.#clearTaskList();
+    this.#renderTripPointList();
+  };
+
   #renderSort() {
+    this.#sortComponent = new SortView({
+      onSortTypeChange: this.#handleSortTypeChange
+    });
     render(this.#sortComponent, this.#boardComponent.element);
   }
 
