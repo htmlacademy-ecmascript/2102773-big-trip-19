@@ -72,7 +72,7 @@ export default class BoardPresenter {
     }
 
     this.#sortPoints(sortType);
-    this.#clearTaskList();
+    this.#clearTripPointList();
     this.#renderTripPointList();
   };
 
@@ -107,7 +107,7 @@ export default class BoardPresenter {
     render(new FiltersView({filters}), this.#filterContainer);
   }
 
-  #clearTaskList() {
+  #clearTripPointList() {
     this.#pointPresenter.forEach((presenter) => presenter.destroy());
     this.#pointPresenter.clear();
   }

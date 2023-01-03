@@ -132,7 +132,7 @@ const mockOffers = [
 
 const mockDestinations = [
   {
-    id: '1',
+    id: nanoid(),
     description: 'описание 1',
     name: 'Москва',
     picture: [
@@ -159,7 +159,7 @@ const mockDestinations = [
     ]
   },
   {
-    id: '2',
+    id: nanoid(),
     description: 'описание 2',
     name: 'Псков',
     picture: [
@@ -186,7 +186,7 @@ const mockDestinations = [
     ]
   },
   {
-    id: '3',
+    id: nanoid(),
     description: 'описание 3',
     name: 'Ярославль',
     picture: [
@@ -217,7 +217,7 @@ const mockDestinations = [
 const mockPoints = [
   {
     basePrice: getRandomIntegerInclusive(10, 1000),
-    dateFrom: new Date('2022-12-29T12:15:56'),
+    dateFrom: new Date('2022-12-31T12:15:56'),
     dateTo: new Date('2022-12-31T14:25:56'),
     destinations: getRandomArrayElement(mockDestinations),
     isFavorite: false,
