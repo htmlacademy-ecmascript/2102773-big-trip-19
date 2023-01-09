@@ -27,15 +27,15 @@ function humanizePointTime(time) {
 function calculateTimeDifference(timeTo, timeFrom) {
   const diff = dayjs(timeTo).diff(dayjs(timeFrom));
 
-  if (diff <= '3600000') {
+  if (diff <= 60 * 60 * 1000) {
     const diffTime = dayjs.duration(diff).format(DIFF_FORMAT_MINUTES);
     return timeTo && timeFrom && timeTo > timeFrom ? diffTime : '';
   }
-  if (diff > '3600000' && diff < '86400000') {
+  if (diff > 60 * 60 * 1000 && diff < 24 * 60 * 60 * 1000) {
     const diffTime = dayjs.duration(diff).format(DIFF_FORMAT_HOURS);
     return timeTo && timeFrom && timeTo > timeFrom ? diffTime : '';
   }
-  if (diff >= '86400000') {
+  if (diff >= 24 * 60 * 60 * 1000) {
     const diffTime = dayjs.duration(diff).format(DIFF_FORMAT_DAYS);
     return timeTo && timeFrom && timeTo > timeFrom ? diffTime : '';
   }
@@ -66,7 +66,7 @@ function getWeightForNullDate(pointA, pointB) {
     return 1;
   }
 
-  if (pointA === null) {
+  if (pointB === null) {
     return -1;
   }
 

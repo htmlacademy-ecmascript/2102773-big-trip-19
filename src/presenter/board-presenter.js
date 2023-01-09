@@ -22,8 +22,9 @@ export default class BoardPresenter {
 
   #boardPoints = [];
   #pointPresenter = new Map();
-  #currentSortType = SortType.DEFAULT;
+  #currentSortType = null;
   #sourcedBoardPoints = [];
+
 
   constructor({infoContainer, filterContainer, boardContainer, pointsModel}) {
     this.#infoContainer = infoContainer;
@@ -56,11 +57,8 @@ export default class BoardPresenter {
       case SortType.TIME:
         this.#boardPoints.sort(sortPointByTime);
         break;
-      case SortType.DEFAULT:
-        this.#boardPoints.sort(sortPointByDate);
-        break;
       default:
-        this.#boardPoints = [...this.#sourcedBoardPoints];
+        this.#boardPoints.sort(sortPointByDate);
     }
 
     this.#currentSortType = sortType;

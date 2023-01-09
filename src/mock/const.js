@@ -8,7 +8,7 @@ const FilterType = {
 };
 
 const SortType = {
-  DEFAULT: 'day',
+  DAY: 'day',
   TIME: 'time',
   PRICE: 'price',
 };
