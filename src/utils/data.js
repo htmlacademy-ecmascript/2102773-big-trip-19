@@ -7,7 +7,7 @@ dayjs.extend(duration);
 dayjs.extend(isSameOrBefore);
 dayjs.extend(isSameOrAfter);
 
-const DATE_FORMAT = 'MMM DD';
+const DATE_FORMAT = 'YYYY MMM DD';
 const TIME_FORMAT = 'HH:mm';
 const DATE_FORMAT_ADD = 'DD/MM/YY HH:mm';
 const DIFF_FORMAT_MINUTES = 'mm[M]';
@@ -88,7 +88,7 @@ function sortPointByTime(pointA, pointB) {
 
 function sortPointByDate(pointA, pointB) {
   const weight = getWeightForNullDate(pointA.dateFrom, pointB.dateFrom);
-  return weight ?? dayjs(pointB.dateFrom).diff(dayjs(pointA.dateFrom));
+  return weight ?? dayjs(pointA.dateFrom).diff(dayjs(pointB.dateFrom));
 }
 
 export {humanizePointDate, humanizePointTime, calculateTimeDifference, humanizePointAddDate, isPointPresent,
