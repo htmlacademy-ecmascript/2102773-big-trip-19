@@ -5,7 +5,7 @@ import { mockOffersByType } from '../mock/data.js';
 
 function createEditFormTemplate(point) {
 
-  const pointTypeDestination = point.destinations.find((destination) => destination.id === point.id);
+  const pointTypeDestination = point.destinations;
   const pointName = pointTypeDestination.name;
   const pointDescription = pointTypeDestination.description;
   const pointTypeAllOffers = mockOffersByType.find((offer) => offer.type === point.type);
@@ -134,7 +134,7 @@ export default class EditFormView extends AbstractView {
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this.#handleFormSubmit();
+    this.#handleFormSubmit(this.#point);
   };
 
   #editClickHandler = (evt) => {
