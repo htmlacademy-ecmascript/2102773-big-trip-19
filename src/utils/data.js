@@ -7,7 +7,7 @@ dayjs.extend(duration);
 dayjs.extend(isSameOrBefore);
 dayjs.extend(isSameOrAfter);
 
-const DATE_FORMAT = 'YYYY MMM DD';
+const DATE_FORMAT = 'MMM DD';
 const TIME_FORMAT = 'HH:mm';
 const DATE_FORMAT_ADD = 'DD/MM/YY HH:mm';
 const DIFF_FORMAT_MINUTES = 'mm[M]';
