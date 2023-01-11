@@ -19,12 +19,10 @@ export default class BoardPresenter {
   #boardComponent = new TripEventsView();
   #sortComponent = null;
   #emptyListComponent = new ListEmptyView();
-
-  #boardPoints = [];
   #pointPresenter = new Map();
   #currentSortType = null;
+  #boardPoints = [];
   #sourcedBoardPoints = [];
-
 
   constructor({infoContainer, filterContainer, boardContainer, pointsModel}) {
     this.#infoContainer = infoContainer;
@@ -60,7 +58,6 @@ export default class BoardPresenter {
       default:
         this.#boardPoints.sort(sortPointByDate);
     }
-
     this.#currentSortType = sortType;
   }
 
@@ -82,7 +79,6 @@ export default class BoardPresenter {
   }
 
   #renderTripPoint(point) {
-
     const pointPresenter = new TripPointPresenter ({
       pointListContainer: this.#boardComponent.element,
       onDataChange: this.#handlePointChange,
