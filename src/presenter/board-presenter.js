@@ -9,6 +9,7 @@ import { generateFilter } from '../mock/filter.js';
 import { updateItem } from '../utils/common.js';
 import { sortPointByPrice, sortPointByTime, sortPointByDate } from '../utils/data.js';
 import { SortType } from '../mock/const.js';
+import AddNewFormView from '../view/add-new-form-view.js';
 
 export default class BoardPresenter {
 
@@ -110,6 +111,11 @@ export default class BoardPresenter {
     this.#boardPoints.forEach((boardPoint) => this.#renderTripPoint(boardPoint));
   }
 
+  #renderAddPointForm() {
+    render(new AddNewFormView({point: this.#boardPoints[3]}), this.#boardComponent.element);
+  }
+
+
   #renderBoard() {
     this.#renderFilters();
 
@@ -122,5 +128,6 @@ export default class BoardPresenter {
     this.#renderSort();
     render(this.#boardComponent, this.#boardContainer);
     this.#renderTripPointList();
+    this.#renderAddPointForm();
   }
 }
