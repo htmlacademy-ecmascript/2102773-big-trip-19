@@ -164,24 +164,24 @@ const mockDestinations = [
     name: 'Псков',
     picture: [
       {
-        src: 'http://picsum.photos/300/200?r=0.001',
-        description: 'описание 1',
+        src: 'http://picsum.photos/300/200?r=0.006',
+        description: 'описание 6',
       },
       {
-        src: 'http://picsum.photos/300/200?r=0.002',
-        description: 'описание 2',
+        src: 'http://picsum.photos/300/200?r=0.007',
+        description: 'описание 7',
       },
       {
-        src: 'http://picsum.photos/300/200?r=0.003',
-        description: 'описание 3',
+        src: 'http://picsum.photos/300/200?r=0.008',
+        description: 'описание 8',
       },
       {
-        src: 'http://picsum.photos/300/200?r=0.004',
-        description: 'описание 4',
+        src: 'http://picsum.photos/300/200?r=0.009',
+        description: 'описание 9',
       },
       {
-        src: 'http://picsum.photos/300/200?r=0.005',
-        description: 'описание 5',
+        src: 'http://picsum.photos/300/200?r=0.0010',
+        description: 'описание 10',
       }
     ]
   },
@@ -191,24 +191,24 @@ const mockDestinations = [
     name: 'Ярославль',
     picture: [
       {
-        src: 'http://picsum.photos/300/200?r=0.001',
-        description: 'описание 1',
+        src: 'http://picsum.photos/300/200?r=0.0011',
+        description: 'описание 11',
       },
       {
-        src: 'http://picsum.photos/300/200?r=0.002',
-        description: 'описание 2',
+        src: 'http://picsum.photos/300/200?r=0.0012',
+        description: 'описание 12',
       },
       {
-        src: 'http://picsum.photos/300/200?r=0.003',
-        description: 'описание 3',
+        src: 'http://picsum.photos/300/200?r=0.0013',
+        description: 'описание 13',
       },
       {
-        src: 'http://picsum.photos/300/200?r=0.004',
-        description: 'описание 4',
+        src: 'http://picsum.photos/300/200?r=0.0014',
+        description: 'описание 14',
       },
       {
-        src: 'http://picsum.photos/300/200?r=0.005',
-        description: 'описание 5',
+        src: 'http://picsum.photos/300/200?r=0.0015',
+        description: 'описание 15',
       }
     ]
   }
@@ -253,4 +253,4 @@ function getRandomPoint() {
   };
 }
 
-export { getRandomPoint, mockOffersByType };
+export { getRandomPoint, mockOffersByType, mockDestinations };

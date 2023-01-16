@@ -1,23 +1,26 @@
-import AbstractView from '../framework/view/abstract-view.js';
-import { humanizePointAddDate } from '../utils/data.js';
+import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { POINT_TYPES } from '../mock/const.js';
-import { mockOffersByType } from '../mock/data.js';
+import { mockOffersByType, mockDestinations } from '../mock/data.js';
+import flatpickr from 'flatpickr';
+import 'flatpickr/dist/flatpickr.min.css';
+
+const destinationsName = [];
+mockDestinations.forEach((mockDestination) => destinationsName.push(mockDestination.name));
 
 function createEditFormTemplate(point) {
 
   const pointTypeDestination = point.destinations;
-  const pointName = pointTypeDestination.name;
-  const pointDescription = pointTypeDestination.description;
+  const pointDestination = mockDestinations.find((destination) => destination.id === pointTypeDestination.id);
+  const pointDescription = pointDestination.description;
+  const pointName = pointDestination.name;
+
   const pointTypeAllOffers = mockOffersByType.find((offer) => offer.type === point.type);
   const pointTypeOffer = point.offers.find((offer) => offer.type === point.type);
 
   const {type, dateFrom, dateTo, basePrice} = point;
 
-  const dateStart = humanizePointAddDate(dateFrom);
-  const dateEnd = humanizePointAddDate(dateTo);
-
   function createDestination () {
-    return pointDescription ? (`<section class="event__section  event__section--destination">
+    return pointDestination && pointDescription ? (`<section class="event__section  event__section--destination">
     <h3 class="event__section-title  event__section-title--destination">Destination</h3>
     <p class="event__destination-description">${pointDescription}</p>
   </section>`) : '';
@@ -66,23 +69,22 @@ function createEditFormTemplate(point) {
     </div>
 
     <div class="event__field-group  event__field-group--destination">
-      <label class="event__label  event__type-output" for="event-destination-2">
+      <label class="event__label  event__type-output" for="event-destination-1">
       ${type}
       </label>
-      <input class="event__input  event__input--destination" id="event-destination-2" type="text" name="event-destination" value="${pointName}" list="destination-list-1">
+
+      <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${pointName}" list="destination-list-1">
       <datalist id="destination-list-1">
-        <option value="Amsterdam"></option>
-        <option value="Geneva"></option>
-        <option value="Chamonix"></option>
+      ${destinationsName.map((city) => (`<option value="${city}"></option>`)).join('')}
       </datalist>
     </div>
 
     <div class="event__field-group  event__field-group--time">
       <label class="visually-hidden" for="event-start-time-1">From</label>
-      <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dateStart}">
+      <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dateFrom}">
       &mdash;
       <label class="visually-hidden" for="event-end-time-1">To</label>
-      <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dateEnd}">
+      <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dateTo}">
     </div>
 
     <div class="event__field-group  event__field-group--price">
@@ -113,32 +115,134 @@ function createEditFormTemplate(point) {
   );
 }
 
-export default class EditFormView extends AbstractView {
-  #point = null;
+export default class EditFormView extends AbstractStatefulView {
   #handleFormSubmit = null;
   #handleEditClick = null;
+  #datepicker = null;
 
   constructor ({point, onFormSubmit, onEditClick}) {
     super();
-    this.#point = point;
+    this._setState(EditFormView.parsePointToState(point));
+
     this.#handleFormSubmit = onFormSubmit;
     this.#handleEditClick = onEditClick;
 
-    this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
-    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#editClickHandler);
+    this._restoreHandlers();
+
+
   }
 
   get template() {
-    return createEditFormTemplate(this.#point);
+    return createEditFormTemplate(this._state);
   }
+
+  removeElement() {
+    super.removeElement();
+
+    if (this.#datepicker) {
+      this.#datepicker.destroy();
+      this.#datepicker = null;
+    }
+  }
+
+  reset(point) {
+    this.updateElement(
+      EditFormView.parsePointToState(point),
+    );
+  }
+
+  _restoreHandlers() {
+    this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#editClickHandler);
+
+    this.element.querySelector('.event__type-list').addEventListener('change', this.#typeChangeHandler);
+    this.element.querySelector('.event__input--destination').addEventListener('change', this.#nameChangeHandler);
+    this.element.querySelector('.event__input--price').addEventListener('input', this.#priceInputHandler);
+
+    this.#setDatepicker();
+  }
+
+  #typeChangeHandler = (evt) => {
+    evt.preventDefault();
+    this.updateElement({
+      type: evt.target.value,
+    });
+  };
+
+  #nameChangeHandler = (evt) => {
+    evt.preventDefault();
+    const pointDestination = mockDestinations.find((destination) => destination.name === evt.target.value);
+    if (pointDestination) {
+      this.updateElement({
+        destinations: {
+          ...this._state.destinations,
+          name: evt.target.value,
+          id: pointDestination.id,
+        }
+      });
+    }
+  };
+
+  #priceInputHandler = (evt) => {
+    evt.preventDefault();
+    this._setState({
+      basePrice: evt.target.value,
+    });
+  };
+
+  #dateFromChangeHandler = ([userDate]) => {
+    this.updateElement({
+      dateFrom: userDate,
+    });
+  };
+
+  #dateToChangeHandler = ([userDate]) => {
+    this.updateElement({
+      dateTo: userDate,
+    });
+  };
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this.#handleFormSubmit(this.#point);
+    this.#handleFormSubmit(EditFormView.parseStateToPoint(this._state));
   };
 
   #editClickHandler = (evt) => {
     evt.preventDefault();
     this.#handleEditClick();
   };
+
+  #setDatepicker() {
+
+    this.#datepicker = flatpickr(
+      this.element.querySelector('#event-start-time-1'),
+      {
+        enableTime: true,
+        dateFormat: 'j/m/y H:i',
+        defaultDate: this._state.dateFrom,
+        onChange: this.#dateFromChangeHandler,
+      },
+    );
+
+    this.#datepicker = flatpickr(
+      this.element.querySelector('#event-end-time-1'),
+      {
+        enableTime: true,
+        dateFormat: 'j/m/y H:i',
+        defaultDate: this._state.dateTo,
+        minDate: this._state.dateFrom,
+        onChange: this.#dateToChangeHandler,
+      },
+    );
+  }
+
+  static parsePointToState(point) {
+    return {...point,
+    };
+  }
+
+  static parseStateToPoint(state) {
+    return {...state,
+    };
+  }
 }
