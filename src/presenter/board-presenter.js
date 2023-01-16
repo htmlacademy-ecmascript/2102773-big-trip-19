@@ -11,6 +11,8 @@ import { sortPointByPrice, sortPointByTime, sortPointByDate } from '../utils/dat
 import { SortType } from '../mock/const.js';
 import AddNewFormView from '../view/add-new-form-view.js';
 
+const NEW_FORM_POINT_NUMBER = 3;
+
 export default class BoardPresenter {
 
   #filterContainer = null;
@@ -112,7 +114,7 @@ export default class BoardPresenter {
   }
 
   #renderAddPointForm() {
-    render(new AddNewFormView({point: this.#boardPoints[3]}), this.#boardComponent.element);
+    render(new AddNewFormView({point: this.#boardPoints[NEW_FORM_POINT_NUMBER]}), this.#boardComponent.element);
   }
 
 
