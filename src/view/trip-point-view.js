@@ -1,11 +1,11 @@
 import AbstractView from '../framework/view/abstract-view.js';
 import {humanizePointDate, humanizePointTime, calculateTimeDifference} from '../utils/data.js';
-import { mockOffersByType } from '../mock/data.js';
+import { mockOffersByType as offersByType } from '../mock/data.js';
 
 function createTripPointTemplate(point) {
   const pointTypeOffer = point.offers.find((offer) => offer.type === point.type);
   const pointName = point.destinations.name;
-  const pointTypeAllOffers = mockOffersByType.find((offer) => offer.type === point.type);
+  const pointTypeAllOffers = offersByType.find((offer) => offer.type === point.type);
   const {type, dateFrom, dateTo, basePrice, isFavorite} = point;
 
   function createOffer () {

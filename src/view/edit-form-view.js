@@ -1,20 +1,20 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { POINT_TYPES } from '../mock/const.js';
-import { mockOffersByType, mockDestinations } from '../mock/data.js';
+import { mockOffersByType as offersByType, mockDestinations as destinations } from '../mock/data.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 
 const destinationsName = [];
-mockDestinations.forEach((mockDestination) => destinationsName.push(mockDestination.name));
+destinations.forEach((destination) => destinationsName.push(destination.name));
 
 function createEditFormTemplate(point) {
 
   const pointTypeDestination = point.destinations;
-  const pointDestination = mockDestinations.find((destination) => destination.id === pointTypeDestination.id);
+  const pointDestination = destinations.find((destination) => destination.id === pointTypeDestination.id);
   const pointDescription = pointDestination.description;
   const pointName = pointDestination.name;
 
-  const pointTypeAllOffers = mockOffersByType.find((offer) => offer.type === point.type);
+  const pointTypeAllOffers = offersByType.find((offer) => offer.type === point.type);
   const pointTypeOffer = point.offers.find((offer) => offer.type === point.type);
 
   const {type, dateFrom, dateTo, basePrice} = point;
@@ -73,7 +73,8 @@ function createEditFormTemplate(point) {
       ${type}
       </label>
 
-      <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${pointName}" list="destination-list-1">
+      <input class="event__input  event__input--destination" id="event-destination-1" type="text" autocomplete="off" required
+      name="event-destination" value="${pointName}" list="destination-list-1">
       <datalist id="destination-list-1">
       ${destinationsName.map((city) => (`<option value="${city}"></option>`)).join('')}
       </datalist>
@@ -171,7 +172,7 @@ export default class EditFormView extends AbstractStatefulView {
 
   #nameChangeHandler = (evt) => {
     evt.preventDefault();
-    const pointDestination = mockDestinations.find((destination) => destination.name === evt.target.value);
+    const pointDestination = destinations.find((destination) => destination.name === evt.target.value);
     if (pointDestination) {
       this.updateElement({
         destinations: {
