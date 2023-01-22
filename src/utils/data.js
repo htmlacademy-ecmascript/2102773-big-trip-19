@@ -91,5 +91,9 @@ function sortPointByDate(pointA, pointB) {
   return weight ?? dayjs(pointA.dateFrom).diff(dayjs(pointB.dateFrom));
 }
 
+function isDatesEqual(dateA, dateB) {
+  return (dateA === null && dateB === null) || dayjs(dateA).isSame(dateB, 'D');
+}
+
 export {humanizePointDate, humanizePointTime, calculateTimeDifference, humanizePointAddDate, isPointPresent,
-  isPointPast, isPointFuture, sortPointByPrice, sortPointByTime, sortPointByDate};
+  isPointPast, isPointFuture, sortPointByPrice, sortPointByTime, sortPointByDate, isDatesEqual};

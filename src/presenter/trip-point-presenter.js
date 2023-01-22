@@ -1,6 +1,8 @@
 import {remove, render, replace} from '../framework/render.js';
 import EditFormView from '../view/edit-form-view.js';
 import TripPointView from '../view/trip-point-view.js';
+import {UserAction, UpdateType} from '../mock/const.js';
+import {isDatesEqual} from '../utils/data.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -40,6 +42,7 @@ export default class TripPointPresenter {
       point: this.#point,
       onFormSubmit: this.#handleFormSubmit,
       onEditClick: this.#handleCloseEditClick,
+      onDeleteClick: this.#handleDeleteClick,
     });
 
     if (prevTripPointComponent === null || prevTripEditFormComponent === null) {
@@ -98,16 +101,33 @@ export default class TripPointPresenter {
   };
 
   #handleFavoriteClick = () => {
-    this.#handleDataChange({...this.#point, isFavorite: !this.#point.isFavorite});
+    this.#handleDataChange(
+      UserAction.UPDATE_POINT,
+      UpdateType.PATCH,
+      {...this.#point, isFavorite: !this.#point.isFavorite},
+    );
   };
 
-  #handleFormSubmit = (point) => {
+  #handleFormSubmit = (update) => {
+    const isMinorUpdate = !isDatesEqual(this.#point.dateFrom, update.dateFrom) || !isDatesEqual(this.#point.dateTo, update.dateTo);
+    this.#handleDataChange(
+      UserAction.UPDATE_POINT,
+      isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
+      update,
+    );
     this.#replaceFormToPoint();
-    this.#handleDataChange(point);
   };
 
   #handleCloseEditClick = () => {
     this.#tripEditFormComponent.reset(this.#point);
     this.#replaceFormToPoint();
+  };
+
+  #handleDeleteClick = (point) => {
+    this.#handleDataChange(
+      UserAction.DELETE_POINT,
+      UpdateType.MINOR,
+      point,
+    );
   };
 }

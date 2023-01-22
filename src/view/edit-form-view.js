@@ -93,7 +93,7 @@ function createEditFormTemplate(point) {
         <span class="visually-hidden">Price</span>
         &euro;
       </label>
-      <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
+      <input class="event__input  event__input--price" id="event-price-1" type="number" min="0" name="event-price" value="${basePrice}">
     </div>
 
     <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -119,14 +119,16 @@ function createEditFormTemplate(point) {
 export default class EditFormView extends AbstractStatefulView {
   #handleFormSubmit = null;
   #handleEditClick = null;
+  #handleDeleteClick = null;
   #datepicker = null;
 
-  constructor ({point, onFormSubmit, onEditClick}) {
+  constructor ({point, onFormSubmit, onEditClick, onDeleteClick}) {
     super();
     this._setState(EditFormView.parsePointToState(point));
 
     this.#handleFormSubmit = onFormSubmit;
     this.#handleEditClick = onEditClick;
+    this.#handleDeleteClick = onDeleteClick;
 
     this._restoreHandlers();
 
@@ -159,6 +161,8 @@ export default class EditFormView extends AbstractStatefulView {
     this.element.querySelector('.event__type-list').addEventListener('change', this.#typeChangeHandler);
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#nameChangeHandler);
     this.element.querySelector('.event__input--price').addEventListener('input', this.#priceInputHandler);
+
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#formDeleteClickHandler);
 
     this.#setDatepicker();
   }
@@ -236,6 +240,11 @@ export default class EditFormView extends AbstractStatefulView {
       },
     );
   }
+
+  #formDeleteClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleDeleteClick(EditFormView.parseStateToPoint(this._state));
+  };
 
   static parsePointToState(point) {
     return {...point,
