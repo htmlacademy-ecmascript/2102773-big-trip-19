@@ -57,21 +57,12 @@ const NEW_POINT = {
 const destinationsName = [];
 destinations.forEach((destination) => destinationsName.push(destination.name));
 
-
-
 function createNewFormTemplate(data) {
+  const validName = `^(${destinationsName.join('|')})$`;
 
-  //const pointTypeDestination = data.destinations;
-  //const pointDestination = destinations.find((destination) => destination.id === pointTypeDestination.id);
   const pointDestination = data.destinations;
-  //console.log(pointTypeDestination)
-  console.log(pointDestination)
   const pointDescription = pointDestination.description;
   const pointName = pointDestination.name;
-  console.log(pointName)
-  console.log(data)
-
-
 
   const pointTypeAllOffers = offersByType.find((offer) => offer.type === data.type);
   const pointTypeOffer = data.offers.find((offer) => offer.type === data.type);
@@ -97,13 +88,12 @@ function createNewFormTemplate(data) {
   function createOffers () {
     return pointTypeAllOffers && pointTypeOffer ? (`<section class="event__section  event__section--offers">
     <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-
     <div class="event__available-offers">
     ${pointTypeAllOffers.offers.map(({title, price, id}) => {
         const checked = pointTypeOffer.id.includes(id) ? 'checked' : '';
         return (`<div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${id}-1" type="checkbox" name="event-offer-${id}" ${checked}>
-      <label class="event__offer-label" for="event-offer-${id}-1">
+      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${id}-2" type="checkbox" name="event-offer-${id}" ${checked}>
+      <label class="event__offer-label" for="event-offer-${id}-2">
         <span class="event__offer-title">${title}</span>
         &plus;&euro;&nbsp;
         <span class="event__offer-price">${price}</span>
@@ -133,15 +123,6 @@ function createNewFormTemplate(data) {
               <label class="event__type-label  event__type-label--${typeOfList}" for="event-type-${typeOfList}-1">${typeOfList}</label>
             </div>`
         )).join('')}
-          <div class="event__type-item">
-            <input id="event-type-sightseeing-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="sightseeing">
-            <label class="event__type-label  event__type-label--sightseeing" for="event-type-sightseeing-1">Sightseeing</label>
-          </div>
-
-          <div class="event__type-item">
-            <input id="event-type-restaurant-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="restaurant">
-            <label class="event__type-label  event__type-label--restaurant" for="event-type-restaurant-1">Restaurant</label>
-          </div>
         </fieldset>
       </div>
     </div>
@@ -151,7 +132,7 @@ function createNewFormTemplate(data) {
         ${type}
       </label>
       <input class="event__input  event__input--destination" id="event-destination-1" value="${pointName}" placeholder="Название города" type="text" autocomplete="off"
-      name="event-destination" required list="destination-list-1">
+      name="event-destination" required pattern="${validName}" list="destination-list-1">
       <datalist id="destination-list-1">
       ${destinationsName.map((city) => (`<option value="${city}"></option>`)).join('')}
       </datalist>
@@ -204,7 +185,6 @@ export default class AddNewFormView extends AbstractStatefulView {
   }
 
   get template() {
-    console.log(this._state)
     return createNewFormTemplate(this._state);
   }
 
@@ -229,7 +209,6 @@ export default class AddNewFormView extends AbstractStatefulView {
     this.element.querySelector('.event__type-list').addEventListener('change', this.#typeChangeHandler);
     this.element.querySelector('.event__input--destination').addEventListener('input', this.#nameChangeHandler);
     this.element.querySelector('.event__input--price').addEventListener('input', this.#priceInputHandler);
-
     this.#setDatepicker();
   }
 
@@ -243,28 +222,12 @@ export default class AddNewFormView extends AbstractStatefulView {
   #nameChangeHandler = (evt) => {
     evt.preventDefault();
     const pointDestination = destinations.find((destination) => destination.name === evt.target.value);
-    console.log(pointDestination)
-
-    function validName () {
-      const tru = destinationsName.includes(evt.target.value);
-      console.log(this)
-      if (tru) {
-        console.log(tru)
-        return evt.target.value;
-      }
-      else {
-        console.log(this)
-        return this.setCustomValidity('string')}
-    }
-
-    console.log(validName())
 
     if (pointDestination !== undefined) {
       this.updateElement({
         destinations: {
-          //...this._state.destinations,
-          //name: evt.target.value,
-          name: validName(),
+          ...this._state.destinations,
+          name: evt.target.value,
           id: pointDestination.id,
           description: pointDestination.description,
           picture: pointDestination.picture,

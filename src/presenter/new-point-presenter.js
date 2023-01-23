@@ -53,7 +53,6 @@ export default class NewPointPresenter {
   };
 
   #handleCancelClick = () => {
-    //evt.preventDefault();
     this.destroy();
   };
 

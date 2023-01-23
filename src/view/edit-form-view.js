@@ -8,6 +8,7 @@ const destinationsName = [];
 destinations.forEach((destination) => destinationsName.push(destination.name));
 
 function createEditFormTemplate(point) {
+  const validName = `^(${destinationsName.join('|')})$`;
 
   const pointTypeDestination = point.destinations;
   const pointDestination = destinations.find((destination) => destination.id === pointTypeDestination.id);
@@ -73,7 +74,7 @@ function createEditFormTemplate(point) {
       ${type}
       </label>
 
-      <input class="event__input  event__input--destination" id="event-destination-1" type="text" autocomplete="off" required
+      <input class="event__input  event__input--destination" id="event-destination-1" type="text" autocomplete="off" required pattern="${validName}"
       name="event-destination" value="${pointName}" list="destination-list-1">
       <datalist id="destination-list-1">
       ${destinationsName.map((city) => (`<option value="${city}"></option>`)).join('')}
