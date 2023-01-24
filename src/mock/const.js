@@ -25,4 +25,29 @@ const UpdateType = {
   MAJOR: 'MAJOR',
 };
 
-export { POINT_TYPES, FilterType, SortType, UserAction, UpdateType };
+const NEW_POINT = {
+  basePrice: '',
+  dateFrom: '',
+  dateTo: '',
+  destinations: {
+    id: '',
+    description: '',
+    name: '',
+    picture: [
+      {
+        src: '',
+        description: '',
+      },
+    ]
+  },
+  isFavorite: false,
+  offers: [
+    {
+      type: '',
+      id: []
+    },
+  ],
+  type: POINT_TYPES[1],
+};
+
+export { POINT_TYPES, FilterType, SortType, UserAction, UpdateType, NEW_POINT };

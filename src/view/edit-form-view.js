@@ -34,8 +34,8 @@ function createEditFormTemplate(point) {
     ${pointTypeAllOffers.offers.map(({title, price, id}) => {
         const checked = pointTypeOffer.id.includes(id) ? 'checked' : '';
         return (`<div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${id}-2" type="checkbox" name="event-offer-${id}" ${checked}>
-      <label class="event__offer-label" for="event-offer-${id}-2">
+      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${id}-1" type="checkbox" name="event-offer-${id}" ${checked}>
+      <label class="event__offer-label" for="event-offer-${id}-1">
         <span class="event__offer-title">${title}</span>
         &plus;&euro;&nbsp;
         <span class="event__offer-price">${price}</span>
@@ -226,7 +226,8 @@ export default class EditFormView extends AbstractStatefulView {
         enableTime: true,
         dateFormat: 'j/m/y H:i',
         defaultDate: this._state.dateFrom,
-        onChange: this.#dateFromChangeHandler,
+        onClose: this.#dateFromChangeHandler,
+        'time_24hr': true,
       },
     );
 
@@ -237,7 +238,8 @@ export default class EditFormView extends AbstractStatefulView {
         dateFormat: 'j/m/y H:i',
         defaultDate: this._state.dateTo,
         minDate: this._state.dateFrom,
-        onChange: this.#dateToChangeHandler,
+        onClose: this.#dateToChangeHandler,
+        'time_24hr': true,
       },
     );
   }

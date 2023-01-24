@@ -1,58 +1,8 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-import { POINT_TYPES } from '../mock/const.js';
+import { POINT_TYPES, NEW_POINT } from '../mock/const.js';
 import { mockOffersByType as offersByType, mockDestinations as destinations } from '../mock/data.js';
-import { getRandomArrayElement} from '../utils/common.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
-
-const NEW_POINT = {
-  basePrice: '',
-  dateFrom: '',
-  dateTo: '',
-  destinations: {
-    id: '',
-    description: 'описание 1',
-    name: '',
-    picture: [
-      {
-        src: 'http://picsum.photos/300/200?r=0.001',
-        description: 'описание 1',
-      },
-      {
-        src: 'http://picsum.photos/300/200?r=0.002',
-        description: 'описание 2',
-      },
-      {
-        src: 'http://picsum.photos/300/200?r=0.003',
-        description: 'описание 3',
-      },
-      {
-        src: 'http://picsum.photos/300/200?r=0.004',
-        description: 'описание 4',
-      },
-      {
-        src: 'http://picsum.photos/300/200?r=0.005',
-        description: 'описание 5',
-      }
-    ]
-  },
-  isFavorite: false,
-  offers: [
-    {
-      type: getRandomArrayElement(POINT_TYPES),
-      id: ['1', '3']
-    },
-    {
-      type: getRandomArrayElement(POINT_TYPES),
-      id: ['2']
-    },
-    {
-      type: getRandomArrayElement(POINT_TYPES),
-      id: ['1', '2', '3']
-    },
-  ],
-  type: POINT_TYPES[0],
-};
 
 const destinationsName = [];
 destinations.forEach((destination) => destinationsName.push(destination.name));
@@ -65,7 +15,6 @@ function createNewFormTemplate(data) {
   const pointName = pointDestination.name;
 
   const pointTypeAllOffers = offersByType.find((offer) => offer.type === data.type);
-  const pointTypeOffer = data.offers.find((offer) => offer.type === data.type);
   const pointTypesPicture = pointDestination.picture;
 
   const {type, dateFrom, dateTo, basePrice} = data;
@@ -86,20 +35,18 @@ function createNewFormTemplate(data) {
   }
 
   function createOffers () {
-    return pointTypeAllOffers && pointTypeOffer ? (`<section class="event__section  event__section--offers">
+    return pointTypeAllOffers ? (`<section class="event__section  event__section--offers">
     <h3 class="event__section-title  event__section-title--offers">Offers</h3>
     <div class="event__available-offers">
-    ${pointTypeAllOffers.offers.map(({title, price, id}) => {
-        const checked = pointTypeOffer.id.includes(id) ? 'checked' : '';
-        return (`<div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${id}-2" type="checkbox" name="event-offer-${id}" ${checked}>
-      <label class="event__offer-label" for="event-offer-${id}-2">
+    ${pointTypeAllOffers.offers.map(({title, price, id}) =>
+        (`<div class="event__offer-selector">
+      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${id}-1" type="checkbox" name="event-offer-${id}" value="${id}">
+      <label class="event__offer-label" for="event-offer-${id}-1">
         <span class="event__offer-title">${title}</span>
         &plus;&euro;&nbsp;
         <span class="event__offer-price">${price}</span>
       </label>
-    </div>`);
-      }
+    </div>`)
       ).join('')}
     </div>
   </section>`) : '';
@@ -209,6 +156,7 @@ export default class AddNewFormView extends AbstractStatefulView {
     this.element.querySelector('.event__type-list').addEventListener('change', this.#typeChangeHandler);
     this.element.querySelector('.event__input--destination').addEventListener('input', this.#nameChangeHandler);
     this.element.querySelector('.event__input--price').addEventListener('input', this.#priceInputHandler);
+
     this.#setDatepicker();
   }
 
@@ -273,7 +221,8 @@ export default class AddNewFormView extends AbstractStatefulView {
         enableTime: true,
         dateFormat: 'j/m/y H:i',
         defaultDate: this._state.dateFrom,
-        onChange: this.#dateFromChangeHandler,
+        onClose: this.#dateFromChangeHandler,
+        'time_24hr': true,
       },
     );
 
@@ -284,7 +233,8 @@ export default class AddNewFormView extends AbstractStatefulView {
         dateFormat: 'j/m/y H:i',
         defaultDate: this._state.dateTo,
         minDate: this._state.dateFrom,
-        onChange: this.#dateToChangeHandler,
+        onClose: this.#dateToChangeHandler,
+        'time_24hr': true,
       },
     );
   }
