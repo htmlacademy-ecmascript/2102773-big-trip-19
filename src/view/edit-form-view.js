@@ -8,6 +8,7 @@ const destinationsName = [];
 destinations.forEach((destination) => destinationsName.push(destination.name));
 
 function createEditFormTemplate(point) {
+  const validName = `^(${destinationsName.join('|')})$`;
 
   const pointTypeDestination = point.destinations;
   const pointDestination = destinations.find((destination) => destination.id === pointTypeDestination.id);
@@ -33,8 +34,8 @@ function createEditFormTemplate(point) {
     ${pointTypeAllOffers.offers.map(({title, price, id}) => {
         const checked = pointTypeOffer.id.includes(id) ? 'checked' : '';
         return (`<div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${id}-2" type="checkbox" name="event-offer-${id}" ${checked}>
-      <label class="event__offer-label" for="event-offer-${id}-2">
+      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${id}-1" type="checkbox" name="event-offer-${id}" ${checked}>
+      <label class="event__offer-label" for="event-offer-${id}-1">
         <span class="event__offer-title">${title}</span>
         &plus;&euro;&nbsp;
         <span class="event__offer-price">${price}</span>
@@ -73,7 +74,7 @@ function createEditFormTemplate(point) {
       ${type}
       </label>
 
-      <input class="event__input  event__input--destination" id="event-destination-1" type="text" autocomplete="off" required
+      <input class="event__input  event__input--destination" id="event-destination-1" type="text" autocomplete="off" required pattern="${validName}"
       name="event-destination" value="${pointName}" list="destination-list-1">
       <datalist id="destination-list-1">
       ${destinationsName.map((city) => (`<option value="${city}"></option>`)).join('')}
@@ -93,7 +94,7 @@ function createEditFormTemplate(point) {
         <span class="visually-hidden">Price</span>
         &euro;
       </label>
-      <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
+      <input class="event__input  event__input--price" id="event-price-1" type="number" min="0" name="event-price" value="${basePrice}">
     </div>
 
     <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -119,14 +120,16 @@ function createEditFormTemplate(point) {
 export default class EditFormView extends AbstractStatefulView {
   #handleFormSubmit = null;
   #handleEditClick = null;
+  #handleDeleteClick = null;
   #datepicker = null;
 
-  constructor ({point, onFormSubmit, onEditClick}) {
+  constructor ({point, onFormSubmit, onEditClick, onDeleteClick}) {
     super();
     this._setState(EditFormView.parsePointToState(point));
 
     this.#handleFormSubmit = onFormSubmit;
     this.#handleEditClick = onEditClick;
+    this.#handleDeleteClick = onDeleteClick;
 
     this._restoreHandlers();
 
@@ -159,6 +162,8 @@ export default class EditFormView extends AbstractStatefulView {
     this.element.querySelector('.event__type-list').addEventListener('change', this.#typeChangeHandler);
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#nameChangeHandler);
     this.element.querySelector('.event__input--price').addEventListener('input', this.#priceInputHandler);
+
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#formDeleteClickHandler);
 
     this.#setDatepicker();
   }
@@ -221,7 +226,8 @@ export default class EditFormView extends AbstractStatefulView {
         enableTime: true,
         dateFormat: 'j/m/y H:i',
         defaultDate: this._state.dateFrom,
-        onChange: this.#dateFromChangeHandler,
+        onClose: this.#dateFromChangeHandler,
+        'time_24hr': true,
       },
     );
 
@@ -232,10 +238,16 @@ export default class EditFormView extends AbstractStatefulView {
         dateFormat: 'j/m/y H:i',
         defaultDate: this._state.dateTo,
         minDate: this._state.dateFrom,
-        onChange: this.#dateToChangeHandler,
+        onClose: this.#dateToChangeHandler,
+        'time_24hr': true,
       },
     );
   }
+
+  #formDeleteClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleDeleteClick(EditFormView.parseStateToPoint(this._state));
+  };
 
   static parsePointToState(point) {
     return {...point,

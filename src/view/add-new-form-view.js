@@ -1,27 +1,26 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-import { POINT_TYPES } from '../mock/const.js';
+import { POINT_TYPES, NEW_POINT } from '../mock/const.js';
 import { mockOffersByType as offersByType, mockDestinations as destinations } from '../mock/data.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 
 const destinationsName = [];
-destinations.forEach((mockDestination) => destinationsName.push(mockDestination.name));
+destinations.forEach((destination) => destinationsName.push(destination.name));
 
-function createNewFormTemplate(point) {
+function createNewFormTemplate(data) {
+  const validName = `^(${destinationsName.join('|')})$`;
 
-  const pointTypeDestination = point.destinations;
-  const pointDestination = destinations.find((destination) => destination.id === pointTypeDestination.id);
+  const pointDestination = data.destinations;
   const pointDescription = pointDestination.description;
   const pointName = pointDestination.name;
 
-  const pointTypeAllOffers = offersByType.find((offer) => offer.type === point.type);
-  const pointTypeOffer = point.offers.find((offer) => offer.type === point.type);
+  const pointTypeAllOffers = offersByType.find((offer) => offer.type === data.type);
   const pointTypesPicture = pointDestination.picture;
 
-  const {type, dateFrom, dateTo, basePrice} = point;
+  const {type, dateFrom, dateTo, basePrice} = data;
 
   function createDestination () {
-    return pointTypeDestination ? (`<section class="event__section  event__section--destination">
+    return pointDestination ? (`<section class="event__section  event__section--destination">
     <h3 class="event__section-title  event__section-title--destination">Destination</h3>
     <p class="event__destination-description">${pointDescription}</p>
 
@@ -36,21 +35,18 @@ function createNewFormTemplate(point) {
   }
 
   function createOffers () {
-    return pointTypeAllOffers && pointTypeOffer ? (`<section class="event__section  event__section--offers">
+    return pointTypeAllOffers ? (`<section class="event__section  event__section--offers">
     <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-
     <div class="event__available-offers">
-    ${pointTypeAllOffers.offers.map(({title, price, id}) => {
-        const checked = pointTypeOffer.id.includes(id) ? 'checked' : '';
-        return (`<div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${id}-1" type="checkbox" name="event-offer-${id}" ${checked}>
+    ${pointTypeAllOffers.offers.map(({title, price, id}) =>
+        (`<div class="event__offer-selector">
+      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${id}-1" type="checkbox" name="event-offer-${id}" value="${id}">
       <label class="event__offer-label" for="event-offer-${id}-1">
         <span class="event__offer-title">${title}</span>
         &plus;&euro;&nbsp;
         <span class="event__offer-price">${price}</span>
       </label>
-    </div>`);
-      }
+    </div>`)
       ).join('')}
     </div>
   </section>`) : '';
@@ -74,15 +70,6 @@ function createNewFormTemplate(point) {
               <label class="event__type-label  event__type-label--${typeOfList}" for="event-type-${typeOfList}-1">${typeOfList}</label>
             </div>`
         )).join('')}
-          <div class="event__type-item">
-            <input id="event-type-sightseeing-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="sightseeing">
-            <label class="event__type-label  event__type-label--sightseeing" for="event-type-sightseeing-1">Sightseeing</label>
-          </div>
-
-          <div class="event__type-item">
-            <input id="event-type-restaurant-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="restaurant">
-            <label class="event__type-label  event__type-label--restaurant" for="event-type-restaurant-1">Restaurant</label>
-          </div>
         </fieldset>
       </div>
     </div>
@@ -91,8 +78,8 @@ function createNewFormTemplate(point) {
       <label class="event__label  event__type-output" for="event-destination-1">
         ${type}
       </label>
-      <input class="event__input  event__input--destination" id="event-destination-1" type="text" autocomplete="off" required
-      name="event-destination" value="${pointName}" list="destination-list-1">
+      <input class="event__input  event__input--destination" id="event-destination-1" value="${pointName}" placeholder="Название города" type="text" autocomplete="off"
+      name="event-destination" required pattern="${validName}" list="destination-list-1">
       <datalist id="destination-list-1">
       ${destinationsName.map((city) => (`<option value="${city}"></option>`)).join('')}
       </datalist>
@@ -111,7 +98,7 @@ function createNewFormTemplate(point) {
         <span class="visually-hidden">Price</span>
         &euro;
       </label>
-      <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
+      <input class="event__input  event__input--price" id="event-price-1" type="number" min="0" name="event-price" value="${basePrice}">
     </div>
 
     <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -132,11 +119,15 @@ function createNewFormTemplate(point) {
 }
 
 export default class AddNewFormView extends AbstractStatefulView {
+  #handleFormSubmit = null;
+  #handleCancelClick = null;
   #datepicker = null;
 
-  constructor ({point}) {
+  constructor ({point = NEW_POINT, onFormSubmit, onCancelClick}) {
     super();
     this._setState(AddNewFormView.parsePointToState(point));
+    this.#handleFormSubmit = onFormSubmit;
+    this.#handleCancelClick = onCancelClick;
     this._restoreHandlers();
   }
 
@@ -161,9 +152,9 @@ export default class AddNewFormView extends AbstractStatefulView {
 
   _restoreHandlers() {
     this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#cancelClickHandler);
     this.element.querySelector('.event__type-list').addEventListener('change', this.#typeChangeHandler);
-    this.element.querySelector('.event__input').addEventListener('change', this.#nameChangeHandler);
-
+    this.element.querySelector('.event__input--destination').addEventListener('input', this.#nameChangeHandler);
     this.element.querySelector('.event__input--price').addEventListener('input', this.#priceInputHandler);
 
     this.#setDatepicker();
@@ -179,12 +170,15 @@ export default class AddNewFormView extends AbstractStatefulView {
   #nameChangeHandler = (evt) => {
     evt.preventDefault();
     const pointDestination = destinations.find((destination) => destination.name === evt.target.value);
-    if (pointDestination) {
+
+    if (pointDestination !== undefined) {
       this.updateElement({
         destinations: {
           ...this._state.destinations,
           name: evt.target.value,
           id: pointDestination.id,
+          description: pointDestination.description,
+          picture: pointDestination.picture,
         }
       });
     }
@@ -211,6 +205,12 @@ export default class AddNewFormView extends AbstractStatefulView {
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
+    this.#handleFormSubmit(AddNewFormView.parseStateToPoint(this._state));
+  };
+
+  #cancelClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleCancelClick();
   };
 
   #setDatepicker() {
@@ -221,7 +221,8 @@ export default class AddNewFormView extends AbstractStatefulView {
         enableTime: true,
         dateFormat: 'j/m/y H:i',
         defaultDate: this._state.dateFrom,
-        onChange: this.#dateFromChangeHandler,
+        onClose: this.#dateFromChangeHandler,
+        'time_24hr': true,
       },
     );
 
@@ -232,7 +233,8 @@ export default class AddNewFormView extends AbstractStatefulView {
         dateFormat: 'j/m/y H:i',
         defaultDate: this._state.dateTo,
         minDate: this._state.dateFrom,
-        onChange: this.#dateToChangeHandler,
+        onClose: this.#dateToChangeHandler,
+        'time_24hr': true,
       },
     );
   }

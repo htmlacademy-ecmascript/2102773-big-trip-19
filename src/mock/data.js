@@ -134,7 +134,7 @@ const mockDestinations = [
   {
     id: nanoid(),
     description: 'описание 1',
-    name: 'Москва',
+    name: 'Санкт-Петербург',
     picture: [
       {
         src: 'http://picsum.photos/300/200?r=0.001',
