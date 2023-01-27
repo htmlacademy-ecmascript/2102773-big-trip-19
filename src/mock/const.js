@@ -23,31 +23,17 @@ const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
+  INIT: 'INIT',
 };
 
 const NEW_POINT = {
   basePrice: '',
   dateFrom: '',
   dateTo: '',
-  destinations: {
-    id: '',
-    description: '',
-    name: '',
-    picture: [
-      {
-        src: '',
-        description: '',
-      },
-    ]
-  },
+  destinations: null,
   isFavorite: false,
-  offers: [
-    {
-      type: '',
-      id: []
-    },
-  ],
-  type: POINT_TYPES[1],
+  offers: [],
+  type: POINT_TYPES[0],
 };
 
 export { POINT_TYPES, FilterType, SortType, UserAction, UpdateType, NEW_POINT };

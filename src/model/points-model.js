@@ -1,44 +1,138 @@
 import Observable from '../framework/observable.js';
-import {getRandomPoint} from '../mock/data.js';
+import {UpdateType} from '../mock/const.js';
+//import {getRandomPoint} from '../mock/data.js';
 
-const TRIP_POINTS_COUNT = 4;
+//const TRIP_POINTS_COUNT = 4;
 
 export default class PointsModel extends Observable {
-  #points = Array.from({length: TRIP_POINTS_COUNT}, getRandomPoint);
+  #pointsApiService = null;
+  //#points = Array.from({length: TRIP_POINTS_COUNT}, getRandomPoint);
+  #points = [];
+  #destinations = [];
+  #offers = [];
+
+  constructor({pointsApiService}) {
+    super();
+    this.#pointsApiService = pointsApiService;
+
+    // this.#pointsApiService.points.then((points) => {
+    //   console.log(points.map(this.#adaptToClient));
+    //   // Есть проблема: cтруктура объекта похожа, но некоторые ключи называются иначе,
+    //   // а ещё на сервере используется snake_case, а у нас camelCase.
+    //   // Можно, конечно, переписать часть нашего клиентского приложения, но зачем?
+    //   // Есть вариант получше - паттерн "Адаптер"
+    // });
+
+    // this.#pointsApiService.destinations.then((destinations) => {
+    //   console.log(destinations);
+    //   // Есть проблема: cтруктура объекта похожа, но некоторые ключи называются иначе,
+    //   // а ещё на сервере используется snake_case, а у нас camelCase.
+    //   // Можно, конечно, переписать часть нашего клиентского приложения, но зачем?
+    //   // Есть вариант получше - паттерн "Адаптер"
+    // });
+
+    // this.#pointsApiService.offers.then((offers) => {
+    //   console.log(offers);
+    //   // Есть проблема: cтруктура объекта похожа, но некоторые ключи называются иначе,
+    //   // а ещё на сервере используется snake_case, а у нас camelCase.
+    //   // Можно, конечно, переписать часть нашего клиентского приложения, но зачем?
+    //   // Есть вариант получше - паттерн "Адаптер"
+    // });
+  }
+
   get points() {
     return this.#points;
   }
 
-  updatePoint(updateType, update) {
+  get destinations() {
+    return this.#destinations;
+  }
+
+  get offers() {
+    return this.#offers;
+  }
+
+  async init() {
+    try {
+      const points = await this.#pointsApiService.points;
+      const offers = await this.#pointsApiService.offers;
+      const destinations = await this.#pointsApiService.destinations;
+
+      this.#points = points.map(this.#adaptToClient);
+      this.#offers = offers;
+      this.#destinations = destinations;
+    } catch(err) {
+      this.#points = [];
+      this.#offers = [];
+      this.#destinations = [];
+    }
+    this._notify(UpdateType.INIT);
+  }
+
+  async updatePoint(updateType, update) {
     const index = this.#points.findIndex((points) => points.id === update.id);
     if (index !== -1) {
-      this.#points = [
-        ...this.#points.slice(0, index),
-        update,
-        ...this.#points.slice(index + 1),
-      ];
-
-      this._notify(updateType, update);
+      try {
+        const response = await this.#pointsApiService.updatePoint(update);
+        const updatedPoint = this.#adaptToClient(response);
+        this.#points = [
+          ...this.#points.slice(0, index),
+          updatedPoint,
+          ...this.#points.slice(index + 1),
+        ];
+        this._notify(updateType, updatedPoint);
+      } catch(err) {
+        throw new Error('Can\'t update point');
+      }
     }
   }
 
-  addPoint(updateType, update) {
-    this.#points = [
-      update,
-      ...this.#points,
-    ];
-    this._notify(updateType, update);
+  async addPoint(updateType, update) {
+
+    try {
+      const response = await this.#pointsApiService.addPoint(update);
+      const newPoint = this.#adaptToClient(response);
+      this.#points = [newPoint, ...this.#points];
+      this._notify(updateType, newPoint);
+    } catch(err) {
+      throw new Error('Can\'t add point');
+    }
   }
 
-  deletePoint(updateType, update) {
+
+  async deletePoint(updateType, update) {
+
     const index = this.#points.findIndex((points) => points.id === update.id);
     if (index !== -1) {
-      this.#points = [
-        ...this.#points.slice(0, index),
-        ...this.#points.slice(index + 1),
-      ];
-
-      this._notify(updateType);
+      try {
+        await this.#pointsApiService.deletePoint(update);
+        this.#points = [
+          ...this.#points.slice(0, index),
+          ...this.#points.slice(index + 1),
+        ];
+        this._notify(updateType);
+      } catch(err) {
+        throw new Error('Can\'t delete point');
+      }
     }
+  }
+
+  #adaptToClient(point) {
+    const adaptedPoint = {...point,
+      dateFrom: point['date_from'] !== null ? new Date(point['date_from']) : point['date_from'],
+      dateTo: point['date_to'] !== null ? new Date(point['date_to']) : point['date_to'],
+      isFavorite: point['is_favorite'],
+      basePrice: point['base_price'],
+      destinations: point['destination']
+    };
+
+    // Ненужные ключи мы удаляем
+    delete adaptedPoint['date_from'];
+    delete adaptedPoint['date_to'];
+    delete adaptedPoint['is_favorite'];
+    delete adaptedPoint['base_price'];
+    delete adaptedPoint['destination'];
+
+    return adaptedPoint;
   }
 }

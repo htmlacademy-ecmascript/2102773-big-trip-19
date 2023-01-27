@@ -2,6 +2,7 @@ import { render, RenderPosition, remove } from '../framework/render.js';
 import TripEventsView from '../view/trip-events-list-view.js';
 import SortView from '../view/sort-view.js';
 import ListEmptyView from '../view/list-empty-view.js';
+import LoadingView from '../view/loading-view.js';
 import TripInfoView from '../view/trip-info-view.js';
 import TripPointPresenter from './trip-point-presenter.js';
 import NewPointPresenter from './new-point-presenter.js';
@@ -14,6 +15,7 @@ export default class BoardPresenter {
   #infoContainer = null;
   #boardContainer = null;
   #pointsModel = null;
+  #loadingComponent = new LoadingView();
   #filterModel = null;
   #boardComponent = new TripEventsView();
   #sortComponent = null;
@@ -22,12 +24,15 @@ export default class BoardPresenter {
   #newPointPresenter = null;
   #currentSortType = null;
   #filterType = FilterType.EVERYTHING;
+  #isLoading = true;
+
 
   constructor({infoContainer, boardContainer, pointsModel, filterModel, onNewPointDestroy}) {
     this.#infoContainer = infoContainer;
     this.#boardContainer = boardContainer;
     this.#pointsModel = pointsModel;
     this.#filterModel = filterModel;
+
 
     this.#newPointPresenter = new NewPointPresenter({
       pointListContainer: this.#boardComponent.element,
@@ -52,17 +57,26 @@ export default class BoardPresenter {
       default:
         filteredPoints.sort(sortPointByDate);
     }
+
     return filteredPoints;
   }
 
-  init() {
-    this.#renderBoard();
+  get offers() {
+    return this.#pointsModel.offers;
   }
 
-  createPoint() {
+  get destinations() {
+    return this.#pointsModel.destinations;
+  }
+
+  init({offers, destinations}) {
+    this.#renderBoard(offers, destinations);
+  }
+
+  createPoint({offers, destinations}) {
     this.#currentSortType = SortType.DAY;
     this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
-    this.#newPointPresenter.init();
+    this.#newPointPresenter.init(offers, destinations);
   }
 
   #handleModeChange = () => {
@@ -105,6 +119,11 @@ export default class BoardPresenter {
         this.#clearBoard({resetSortType: true});
         this.#renderBoard();
         break;
+      case UpdateType.INIT:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
+        this.#renderBoard();
+        break;
     }
   };
 
@@ -123,16 +142,17 @@ export default class BoardPresenter {
       currentSortType: this.#currentSortType,
       onSortTypeChange: this.#handleSortTypeChange
     });
-    render(this.#sortComponent, this.#boardContainer);
+    render(this.#sortComponent, this.#boardContainer, RenderPosition.AFTERBEGIN);
   }
 
-  #renderTripPoint(point) {
+  #renderTripPoint(point, offers, destinations) {
+
     const pointPresenter = new TripPointPresenter ({
       pointListContainer: this.#boardComponent.element,
       onDataChange: this.#handleViewAction,
       onModeChange: this.#handleModeChange
     });
-    pointPresenter.init(point);
+    pointPresenter.init(point, offers, destinations);
     this.#pointPresenter.set(point.id, pointPresenter);
   }
 
@@ -147,21 +167,25 @@ export default class BoardPresenter {
     render(new TripInfoView({point: this.points}), this.#infoContainer, RenderPosition.AFTERBEGIN);
   }
 
-  #renderPoints(points) {
-    points.forEach((point) => this.#renderTripPoint(point));
+  #renderPoints(points, offers, destinations) {
+    points.forEach((point) => this.#renderTripPoint(point, offers, destinations));
+  }
+
+  #renderLoading() {
+    render(this.#loadingComponent, this.#boardContainer);
   }
 
   #clearBoard({resetSortType = false} = {}) {
-
     this.#pointPresenter.forEach((presenter) => presenter.destroy());
     this.#pointPresenter.clear();
     this.#newPointPresenter.destroy();
-
     remove(this.#sortComponent);
 
     if (this.#emptyListComponent) {
       remove(this.#emptyListComponent);
     }
+
+    remove(this.#loadingComponent);
 
     if (resetSortType) {
       this.#currentSortType = SortType.DAY;
@@ -170,8 +194,16 @@ export default class BoardPresenter {
 
 
   #renderBoard() {
+    render(this.#boardComponent, this.#boardContainer);
+
+    if (this.#isLoading) {
+      this.#renderLoading();
+      return;
+    }
 
     const points = this.points;
+    const offers = this.offers;
+    const destinations = this.destinations;
     const pointsCount = points.length;
 
     if (pointsCount === 0) {
@@ -180,8 +212,8 @@ export default class BoardPresenter {
     }
 
     //this.#renderTripInfo();
+
     this.#renderSort();
-    render(this.#boardComponent, this.#boardContainer);
-    this.#renderPoints(points);
+    this.#renderPoints(points, offers, destinations);
   }
 }

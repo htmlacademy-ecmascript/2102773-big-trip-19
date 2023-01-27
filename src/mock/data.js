@@ -7,22 +7,22 @@ const mockOffersByType = [
     type: getRandomArrayElement(POINT_TYPES),
     offers: [
       {
-        id: '1',
+        id: 1,
         title: 'предложение 1',
         price: getRandomIntegerInclusive(10, 1000),
       },
       {
-        id: '2',
+        id: 2,
         title: 'предложение 2',
         price: getRandomIntegerInclusive(10, 1000),
       },
       {
-        id: '3',
+        id: 3,
         title: 'предложение 3',
         price: getRandomIntegerInclusive(10, 1000),
       },
       {
-        id: '4',
+        id: 4,
         title: 'предложение 4',
         price: getRandomIntegerInclusive(10, 1000),
       },
@@ -32,22 +32,22 @@ const mockOffersByType = [
     type: getRandomArrayElement(POINT_TYPES),
     offers: [
       {
-        id: '1',
+        id: 1,
         title: 'предложение 5',
         price: getRandomIntegerInclusive(10, 1000),
       },
       {
-        id: '2',
+        id: 2,
         title: 'предложение 6',
         price: getRandomIntegerInclusive(10, 1000),
       },
       {
-        id: '3',
+        id: 3,
         title: 'предложение 7',
         price: getRandomIntegerInclusive(10, 1000),
       },
       {
-        id: '4',
+        id: 4,
         title: 'предложение 8',
         price: getRandomIntegerInclusive(10, 1000),
       },
@@ -57,22 +57,22 @@ const mockOffersByType = [
     type: getRandomArrayElement(POINT_TYPES),
     offers: [
       {
-        id: '1',
+        id: 1,
         title: 'предложение 9',
         price: getRandomIntegerInclusive(10, 1000),
       },
       {
-        id: '2',
+        id: 2,
         title: 'предложение 10',
         price: getRandomIntegerInclusive(10, 1000),
       },
       {
-        id: '3',
+        id: 3,
         title: 'предложение 11',
         price: getRandomIntegerInclusive(10, 1000),
       },
       {
-        id: '4',
+        id: 4,
         title: 'предложение 12',
         price: getRandomIntegerInclusive(10, 1000),
       },
@@ -82,17 +82,17 @@ const mockOffersByType = [
     type: getRandomArrayElement(POINT_TYPES),
     offers: [
       {
-        id: '1',
+        id: 1,
         title: 'предложение 13',
         price: getRandomIntegerInclusive(10, 1000),
       },
       {
-        id: '2',
+        id: 2,
         title: 'предложение 14',
         price: getRandomIntegerInclusive(10, 1000),
       },
       {
-        id: '3',
+        id: 3,
         title: 'предложение 15',
         price: getRandomIntegerInclusive(10, 1000),
       },
@@ -102,12 +102,12 @@ const mockOffersByType = [
     type: getRandomArrayElement(POINT_TYPES),
     offers: [
       {
-        id: '1',
+        id: 1,
         title: 'предложение 16',
         price: getRandomIntegerInclusive(10, 1000),
       },
       {
-        id: '2',
+        id: 2,
         title: 'предложение 17',
         price: getRandomIntegerInclusive(10, 1000),
       },
@@ -115,27 +115,27 @@ const mockOffersByType = [
   },
 ];
 
-const mockOffers = [
-  {
-    type: getRandomArrayElement(POINT_TYPES),
-    id: ['1', '3']
-  },
-  {
-    type: getRandomArrayElement(POINT_TYPES),
-    id: ['2']
-  },
-  {
-    type: getRandomArrayElement(POINT_TYPES),
-    id: ['1', '2', '3']
-  },
-];
+// const mockOffers = [
+//   {
+//     type: getRandomArrayElement(POINT_TYPES),
+//     id: ['1', '3']
+//   },
+//   {
+//     type: getRandomArrayElement(POINT_TYPES),
+//     id: ['2']
+//   },
+//   {
+//     type: getRandomArrayElement(POINT_TYPES),
+//     id: ['1', '2', '3']
+//   },
+// ];
 
 const mockDestinations = [
   {
     id: nanoid(),
     description: 'описание 1',
     name: 'Санкт-Петербург',
-    picture: [
+    pictures: [
       {
         src: 'http://picsum.photos/300/200?r=0.001',
         description: 'описание 1',
@@ -162,7 +162,7 @@ const mockDestinations = [
     id: nanoid(),
     description: 'описание 2',
     name: 'Псков',
-    picture: [
+    pictures: [
       {
         src: 'http://picsum.photos/300/200?r=0.006',
         description: 'описание 6',
@@ -189,7 +189,7 @@ const mockDestinations = [
     id: nanoid(),
     description: 'описание 3',
     name: 'Ярославль',
-    picture: [
+    pictures: [
       {
         src: 'http://picsum.photos/300/200?r=0.0011',
         description: 'описание 11',
@@ -219,9 +219,9 @@ const mockPoints = [
     basePrice: getRandomIntegerInclusive(10, 1000),
     dateFrom: new Date('2022-12-31T12:15:56'),
     dateTo: new Date('2022-12-31T14:25:56'),
-    destinations: getRandomArrayElement(mockDestinations),
+    destinations: (getRandomArrayElement(mockDestinations).id),
     isFavorite: false,
-    offers: mockOffers,
+    offers: [1, 3],
     type: getRandomArrayElement(POINT_TYPES),
   },
 
@@ -229,9 +229,9 @@ const mockPoints = [
     basePrice: getRandomIntegerInclusive(10, 1000),
     dateFrom: new Date('2020-05-15T15:30:56'),
     dateTo: new Date('2020-05-20T16:30:56'),
-    destinations: getRandomArrayElement(mockDestinations),
+    destinations: getRandomArrayElement(mockDestinations).id,
     isFavorite: false,
-    offers: mockOffers,
+    offers: [2, 3],
     type: getRandomArrayElement(POINT_TYPES),
   },
 
@@ -239,9 +239,9 @@ const mockPoints = [
     basePrice: getRandomIntegerInclusive(10, 1000),
     dateFrom: new Date('2023-08-01T10:20:56'),
     dateTo: new Date('2023-08-10T11:30:56'),
-    destinations: getRandomArrayElement(mockDestinations),
+    destinations: getRandomArrayElement(mockDestinations).id,
     isFavorite: true,
-    offers: mockOffers,
+    offers: [1, 2],
     type: getRandomArrayElement(POINT_TYPES),
   },
 ];
