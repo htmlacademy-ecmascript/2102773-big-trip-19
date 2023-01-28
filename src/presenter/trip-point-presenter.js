@@ -63,7 +63,8 @@ export default class TripPointPresenter {
     }
 
     if (this.#mode === Mode.EDITING) {
-      replace(this.#tripEditFormComponent, prevTripEditFormComponent);
+      replace(this.#tripPointComponent, prevTripEditFormComponent);
+      this.#mode = Mode.DEFAULT;
     }
 
     remove(prevTripPointComponent);
@@ -78,6 +79,40 @@ export default class TripPointPresenter {
     }
   }
 
+  setSaving() {
+    if (this.#mode === Mode.EDITING) {
+      this.#tripEditFormComponent.updateElement({
+        isDisabled: true,
+        isSaving: true,
+      });
+    }
+  }
+
+  setDeleting() {
+    if (this.#mode === Mode.EDITING) {
+      this.#tripEditFormComponent.updateElement({
+        isDisabled: true,
+        isDeleting: true,
+      });
+    }
+  }
+
+  setAborting() {
+    if (this.#mode === Mode.DEFAULT) {
+      this.#tripPointComponent.shake();
+      return;
+    }
+
+    const resetFormState = () => {
+      this.#tripEditFormComponent.updateElement({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    this.#tripEditFormComponent.shake(resetFormState);
+  }
 
   destroy() {
     remove(this.#tripPointComponent);
@@ -124,7 +159,6 @@ export default class TripPointPresenter {
       isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
       update,
     );
-    this.#replaceFormToPoint();
   };
 
   #handleCloseEditClick = () => {

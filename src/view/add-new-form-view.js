@@ -1,12 +1,7 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { POINT_TYPES, NEW_POINT } from '../mock/const.js';
-//import { mockOffersByType as offersByType, mockDestinations as destinations } from '../mock/data.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
-
-//const destinationsName = [];
-
-//destinations.forEach((destination) => destinationsName.push(destination.name));
 
 function createNewFormTemplate(data, offersByType, destinations) {
   const destinationsName = [];
@@ -20,7 +15,8 @@ function createNewFormTemplate(data, offersByType, destinations) {
   const pointTypeAllOffers = offersByType.find((offer) => offer.type === data.type);
   const pointTypeOffer = data.offers;
 
-  const {type, dateFrom, dateTo, basePrice} = data;
+  const {type, dateFrom, dateTo, basePrice, isDisabled, isSaving} = data;
+  const isSubmitDisabled = (((dateFrom && dateTo) === undefined) || ((dateFrom && dateTo) === ''));
 
   function createPointName () {
     if (pointTypeDestination && pointDestination) {
@@ -56,7 +52,8 @@ function createNewFormTemplate(data, offersByType, destinations) {
     ${pointTypeAllOffers.offers.map(({title, price, id}) => {
         const checked = pointTypeOffer.includes(id) ? 'checked' : '';
         return (`<div class="event__offer-selector">
-        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${id}-1" type="checkbox" name="event-offer-${id}" value="${id}" ${checked}>
+        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${id}-1" type="checkbox" name="event-offer-${id}"
+        value="${id}" ${checked} ${isDisabled ? 'disabled' : ''}>
       <label class="event__offer-label" for="event-offer-${id}-1">
         <span class="event__offer-title">${title}</span>
         &plus;&euro;&nbsp;
@@ -80,7 +77,7 @@ function createNewFormTemplate(data, offersByType, destinations) {
         <span class="visually-hidden">Choose event type</span>
         <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
       </label>
-      <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
+      <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox" ${isDisabled ? 'disabled' : ''}>
 
       <div class="event__type-list">
         <fieldset class="event__type-group">
@@ -100,7 +97,7 @@ function createNewFormTemplate(data, offersByType, destinations) {
         ${type}
       </label>
       <input class="event__input  event__input--destination" id="event-destination-1" value="${createPointName()}" placeholder="Название города" type="text" autocomplete="off"
-      name="event-destination" required pattern="${validName}" list="destination-list-1">
+      name="event-destination" required pattern="${validName}" list="destination-list-1" ${isDisabled ? 'disabled' : ''}>
       <datalist id="destination-list-1">
       ${destinationsName.map((city) => (`<option value="${city}"></option>`)).join('')}
       </datalist>
@@ -108,10 +105,10 @@ function createNewFormTemplate(data, offersByType, destinations) {
 
     <div class="event__field-group  event__field-group--time">
       <label class="visually-hidden" for="event-start-time-1">From</label>
-      <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dateFrom}">
+      <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dateFrom}" ${isDisabled ? 'disabled' : ''}>
       &mdash;
       <label class="visually-hidden" for="event-end-time-1">To</label>
-      <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dateTo}">
+      <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dateTo}" ${isDisabled ? 'disabled' : ''}>
     </div>
 
     <div class="event__field-group  event__field-group--price">
@@ -119,10 +116,12 @@ function createNewFormTemplate(data, offersByType, destinations) {
         <span class="visually-hidden">Price</span>
         &euro;
       </label>
-      <input class="event__input  event__input--price" id="event-price-1" type="number" min="0" name="event-price" value="${basePrice}">
+      <input class="event__input  event__input--price" id="event-price-1" type="number" min="1" required name="event-price" value="${basePrice}" ${isDisabled ? 'disabled' : ''}>
     </div>
 
-    <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
+    <button class="event__save-btn  btn  btn--blue" type="submit" ${isSubmitDisabled || isDisabled ? 'disabled' : ''}>
+    ${isSaving ? 'Saving...' : 'Save'}
+    </button>
     <button class="event__reset-btn" type="reset">Cancel</button>
   </header>`);
   }
@@ -145,7 +144,6 @@ export default class AddNewFormView extends AbstractStatefulView {
   #destinations = null;
   #handleCancelClick = null;
   #datepicker = null;
-  #arrOffersId = [];
 
   constructor ({point = NEW_POINT, offersByType, destinations, onFormSubmit, onCancelClick}) {
     super();
@@ -209,25 +207,25 @@ export default class AddNewFormView extends AbstractStatefulView {
 
   #offersChangeHandler = (evt) => {
     evt.preventDefault();
-    const index = this.#arrOffersId.findIndex((arrOffersId) => String(arrOffersId) === evt.target.value);
+    const index = this._state.offers.findIndex((offers) => String(offers) === evt.target.value);
 
     if (index !== -1) {
-      this.#arrOffersId = [
-        ...this.#arrOffersId.slice(0, index),
-        ...this.#arrOffersId.slice(index + 1),
+      this._state.offers = [
+        ...this._state.offers.slice(0, index),
+        ...this._state.offers.slice(index + 1),
       ];
     }
     else {
-      this.#arrOffersId = [
+      this._state.offers = [
         Number(evt.target.value),
-        ...this.#arrOffersId,
+        ...this._state.offers,
       ];
     }
 
-    if (this.#offersByType) {
+    if (this._state.offers) {
       this.updateElement({
         ...this._state,
-        offers: this.#arrOffersId,
+        offers: this._state.offers,
       });
     }
   };
@@ -289,11 +287,15 @@ export default class AddNewFormView extends AbstractStatefulView {
 
   static parsePointToState(point) {
     return {...point,
+      isDisabled: false,
+      isSaving: false,
     };
   }
 
   static parseStateToPoint(state) {
-    return {...state,
-    };
+    const point = {...state};
+    delete point.isDisabled;
+    delete point.isSaving;
+    return point;
   }
 }

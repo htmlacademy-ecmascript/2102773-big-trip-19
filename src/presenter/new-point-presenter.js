@@ -1,6 +1,5 @@
 import {remove, render, RenderPosition} from '../framework/render.js';
 import AddNewFormView from '../view/add-new-form-view.js';
-//import {nanoid} from 'nanoid';
 import {UserAction, UpdateType} from '../mock/const.js';
 
 export default class NewPointPresenter {
@@ -16,8 +15,6 @@ export default class NewPointPresenter {
     this.#pointListContainer = pointListContainer;
     this.#handleDataChange = onDataChange;
     this.#handleDestroy = onDestroy;
-    // this.#offersByType = offersByType;
-    // this.#destinations = destinations;
   }
 
   init(offersByType, destinations) {
@@ -51,13 +48,31 @@ export default class NewPointPresenter {
     document.removeEventListener('keydown', this.#escKeyDownHandler);
   }
 
+  setSaving() {
+    this.#tripAddFormComponent.updateElement({
+      isDisabled: true,
+      isSaving: true,
+    });
+  }
+
+  setAborting() {
+    const resetFormState = () => {
+      this.#tripAddFormComponent.updateElement({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    this.#tripAddFormComponent.shake(resetFormState);
+  }
+
   #handleFormSubmit = (point) => {
     this.#handleDataChange(
       UserAction.ADD_POINT,
       UpdateType.MAJOR,
       point,
     );
-    this.destroy();
   };
 
   #handleCancelClick = () => {

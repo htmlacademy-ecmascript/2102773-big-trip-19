@@ -1,12 +1,8 @@
 import Observable from '../framework/observable.js';
 import {UpdateType} from '../mock/const.js';
-//import {getRandomPoint} from '../mock/data.js';
-
-//const TRIP_POINTS_COUNT = 4;
 
 export default class PointsModel extends Observable {
   #pointsApiService = null;
-  //#points = Array.from({length: TRIP_POINTS_COUNT}, getRandomPoint);
   #points = [];
   #destinations = [];
   #offers = [];
@@ -14,30 +10,6 @@ export default class PointsModel extends Observable {
   constructor({pointsApiService}) {
     super();
     this.#pointsApiService = pointsApiService;
-
-    // this.#pointsApiService.points.then((points) => {
-    //   console.log(points.map(this.#adaptToClient));
-    //   // Есть проблема: cтруктура объекта похожа, но некоторые ключи называются иначе,
-    //   // а ещё на сервере используется snake_case, а у нас camelCase.
-    //   // Можно, конечно, переписать часть нашего клиентского приложения, но зачем?
-    //   // Есть вариант получше - паттерн "Адаптер"
-    // });
-
-    // this.#pointsApiService.destinations.then((destinations) => {
-    //   console.log(destinations);
-    //   // Есть проблема: cтруктура объекта похожа, но некоторые ключи называются иначе,
-    //   // а ещё на сервере используется snake_case, а у нас camelCase.
-    //   // Можно, конечно, переписать часть нашего клиентского приложения, но зачем?
-    //   // Есть вариант получше - паттерн "Адаптер"
-    // });
-
-    // this.#pointsApiService.offers.then((offers) => {
-    //   console.log(offers);
-    //   // Есть проблема: cтруктура объекта похожа, но некоторые ключи называются иначе,
-    //   // а ещё на сервере используется snake_case, а у нас camelCase.
-    //   // Можно, конечно, переписать часть нашего клиентского приложения, но зачем?
-    //   // Есть вариант получше - паттерн "Адаптер"
-    // });
   }
 
   get points() {
@@ -126,7 +98,6 @@ export default class PointsModel extends Observable {
       destinations: point['destination']
     };
 
-    // Ненужные ключи мы удаляем
     delete adaptedPoint['date_from'];
     delete adaptedPoint['date_to'];
     delete adaptedPoint['is_favorite'];
