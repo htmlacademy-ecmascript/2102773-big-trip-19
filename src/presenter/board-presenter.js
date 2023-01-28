@@ -9,7 +9,7 @@ import TripPointPresenter from './trip-point-presenter.js';
 import NewPointPresenter from './new-point-presenter.js';
 import {filter} from '../utils/filter.js';
 import { sortPointByPrice, sortPointByTime, sortPointByDate } from '../utils/data.js';
-import { SortType, UpdateType, UserAction, FilterType } from '../mock/const.js';
+import { SortType, UpdateType, UserAction, FilterType } from '../const.js';
 
 const TimeLimit = {
   LOWER_LIMIT: 350,
@@ -28,7 +28,7 @@ export default class BoardPresenter {
   #emptyListComponent = null;
   #pointPresenter = new Map();
   #newPointPresenter = null;
-  #currentSortType = null;
+  #currentSortType = SortType.DAY;
   #filterType = FilterType.EVERYTHING;
   #isLoading = true;
   #uiBlocker = new UiBlocker({

@@ -64,7 +64,6 @@ export default class PointsApiService extends ApiService {
       'date_to': point.dateTo instanceof Date ? point.dateTo.toISOString() : null, // На сервере дата хранится в ISO формате
       'base_price': Number(point.basePrice),
       'is_favorite': point.isFavorite,
-      'destination': point.destinations,
     };
 
     // Ненужные ключи мы удаляем
@@ -72,7 +71,6 @@ export default class PointsApiService extends ApiService {
     delete adaptedPoint.dateTo;
     delete adaptedPoint.basePrice;
     delete adaptedPoint.isFavorite;
-    delete adaptedPoint.destinations;
 
     return adaptedPoint;
   }

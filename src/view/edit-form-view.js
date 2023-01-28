@@ -1,10 +1,10 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-import { POINT_TYPES } from '../mock/const.js';
+import { POINT_TYPES, POINT_TYPES_DICTIONARY } from '../const.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 
 function createDestination (point, destinations) {
-  const pointTypeDestination = point.destinations;
+  const pointTypeDestination = point.destination;
   const pointDestination = destinations.find((destination) => destination.id === pointTypeDestination);
   const pointDescription = pointDestination.description;
   return pointDestination && pointDescription ? (`<section class="event__section  event__section--destination">
@@ -48,7 +48,7 @@ function createHeader (point, destinations) {
 
   const validName = `^(${destinationsName.join('|')})$`;
 
-  const pointTypeDestination = point.destinations;
+  const pointTypeDestination = point.destination;
   const pointDestination = destinations.find((destination) => destination.id === pointTypeDestination);
   const pointName = pointDestination.name;
 
@@ -69,7 +69,7 @@ function createHeader (point, destinations) {
         ${POINT_TYPES.map((typeOfList) =>
       (`<div class="event__type-item">
             <input id="event-type-${typeOfList}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${typeOfList}">
-            <label class="event__type-label  event__type-label--${typeOfList}" for="event-type-${typeOfList}-1">${typeOfList}</label>
+            <label class="event__type-label  event__type-label--${typeOfList}" for="event-type-${typeOfList}-1">${POINT_TYPES_DICTIONARY[typeOfList]}</label>
           </div>`
       )).join('')}
       </fieldset>
@@ -145,9 +145,7 @@ export default class EditFormView extends AbstractStatefulView {
     this.#handleFormSubmit = onFormSubmit;
     this.#handleEditClick = onEditClick;
     this.#handleDeleteClick = onDeleteClick;
-
     this._restoreHandlers();
-
   }
 
   get template() {
@@ -172,13 +170,10 @@ export default class EditFormView extends AbstractStatefulView {
   _restoreHandlers() {
     this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#editClickHandler);
-
     this.element.querySelector('.event__type-list').addEventListener('change', this.#typeChangeHandler);
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#nameChangeHandler);
     this.element.querySelector('.event__input--price').addEventListener('input', this.#priceInputHandler);
-
     this.element.querySelector('.event__reset-btn').addEventListener('click', this.#formDeleteClickHandler);
-
     this.element.querySelector('.event__available-offers').addEventListener('change', this.#offersChangeHandler);
 
     this.#setDatepicker();
@@ -197,7 +192,7 @@ export default class EditFormView extends AbstractStatefulView {
     const pointDestination = this.#destinations.find((destination) => destination.name === evt.target.value);
     if (pointDestination) {
       this.updateElement({
-        destinations: pointDestination.id,
+        destination: pointDestination.id,
       });
     }
   };

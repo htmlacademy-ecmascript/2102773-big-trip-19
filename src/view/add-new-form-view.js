@@ -1,5 +1,5 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-import { POINT_TYPES, NEW_POINT } from '../mock/const.js';
+import { POINT_TYPES, NEW_POINT, POINT_TYPES_DICTIONARY } from '../const.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 
@@ -9,7 +9,7 @@ function createNewFormTemplate(data, offersByType, destinations) {
 
   const validName = `^(${destinationsName.join('|')})$`;
 
-  const pointTypeDestination = data.destinations;
+  const pointTypeDestination = data.destination;
   const pointDestination = destinations.find((destination) => destination.id === pointTypeDestination);
 
   const pointTypeAllOffers = offersByType.find((offer) => offer.type === data.type);
@@ -85,7 +85,7 @@ function createNewFormTemplate(data, offersByType, destinations) {
           ${POINT_TYPES.map((typeOfList) =>
         (`<div class="event__type-item">
               <input id="event-type-${typeOfList}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${typeOfList}">
-              <label class="event__type-label  event__type-label--${typeOfList}" for="event-type-${typeOfList}-1">${typeOfList}</label>
+              <label class="event__type-label  event__type-label--${typeOfList}" for="event-type-${typeOfList}-1">${POINT_TYPES_DICTIONARY[typeOfList]}</label>
             </div>`
         )).join('')}
         </fieldset>
@@ -200,7 +200,7 @@ export default class AddNewFormView extends AbstractStatefulView {
 
     if (pointDestination !== undefined) {
       this.updateElement({
-        destinations: pointDestination.id,
+        destination: pointDestination.id,
       });
     }
   };

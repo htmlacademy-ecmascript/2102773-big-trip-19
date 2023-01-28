@@ -1,7 +1,7 @@
 import {remove, render, replace} from '../framework/render.js';
 import EditFormView from '../view/edit-form-view.js';
 import TripPointView from '../view/trip-point-view.js';
-import {UserAction, UpdateType} from '../mock/const.js';
+import {UserAction, UpdateType} from '../const.js';
 import {isDatesEqual} from '../utils/data.js';
 
 const Mode = {

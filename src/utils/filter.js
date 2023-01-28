@@ -1,4 +1,4 @@
-import { FilterType } from '../mock/const.js';
+import { FilterType } from '../const.js';
 import { isPointPresent, isPointPast, isPointFuture } from './data.js';
 
 const filter = {

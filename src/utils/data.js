@@ -13,6 +13,7 @@ const DATE_FORMAT_ADD = 'DD/MM/YY HH:mm';
 const DIFF_FORMAT_MINUTES = 'mm[M]';
 const DIFF_FORMAT_HOURS = 'HH[H] mm[M]';
 const DIFF_FORMAT_DAYS = 'DD[D] HH[H] mm[M]';
+const DIFF_FORMAT_MONTH = 'MM[M] DD[D] HH[H] mm[M]';
 
 const today = dayjs();
 
@@ -35,8 +36,12 @@ function calculateTimeDifference(timeTo, timeFrom) {
     const diffTime = dayjs.duration(diff).format(DIFF_FORMAT_HOURS);
     return timeTo && timeFrom && timeTo > timeFrom ? diffTime : '';
   }
-  if (diff >= 24 * 60 * 60 * 1000) {
+  if (diff >= 24 * 60 * 60 * 1000 && diff < 30 * 24 * 60 * 60 * 1000) {
     const diffTime = dayjs.duration(diff).format(DIFF_FORMAT_DAYS);
+    return timeTo && timeFrom && timeTo > timeFrom ? diffTime : '';
+  }
+  if (diff >= 30 * 24 * 60 * 60 * 1000) {
+    const diffTime = dayjs.duration(diff).format(DIFF_FORMAT_MONTH);
     return timeTo && timeFrom && timeTo > timeFrom ? diffTime : '';
   }
 }

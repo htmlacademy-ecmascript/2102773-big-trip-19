@@ -1,6 +1,6 @@
 import {remove, render, RenderPosition} from '../framework/render.js';
 import AddNewFormView from '../view/add-new-form-view.js';
-import {UserAction, UpdateType} from '../mock/const.js';
+import {UserAction, UpdateType} from '../const.js';
 
 export default class NewPointPresenter {
   #pointListContainer = null;

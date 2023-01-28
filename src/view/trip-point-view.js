@@ -3,7 +3,7 @@ import {humanizePointDate, humanizePointTime, calculateTimeDifference} from '../
 
 function createTripPointTemplate(point, offersByType, destinations) {
 
-  const pointTypeDestination = point.destinations;
+  const pointTypeDestination = point.destination;
   const pointDestination = destinations.find((destination) => destination.id === pointTypeDestination);
 
   const pointTypeOffer = point.offers;
@@ -48,9 +48,9 @@ function createTripPointTemplate(point, offersByType, destinations) {
     <h3 class="event__title">${type} ${name()}</h3>
     <div class="event__schedule">
       <p class="event__time">
-        <time class="event__start-time" datetime="2019-03-18T10:30">${timeStart}</time>
+        <time class="event__start-time" datetime="${dateFrom}">${timeStart}</time>
         &mdash;
-        <time class="event__end-time" datetime="2019-03-18T11:00">${timeEnd}</time>
+        <time class="event__end-time" datetime="${dateTo}">${timeEnd}</time>
       </p>
       <p class="event__duration">${diffTime}</p>
     </div>

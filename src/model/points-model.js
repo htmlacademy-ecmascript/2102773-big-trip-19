@@ -1,5 +1,5 @@
 import Observable from '../framework/observable.js';
-import {UpdateType} from '../mock/const.js';
+import {UpdateType} from '../const.js';
 
 export default class PointsModel extends Observable {
   #pointsApiService = null;
@@ -95,14 +95,14 @@ export default class PointsModel extends Observable {
       dateTo: point['date_to'] !== null ? new Date(point['date_to']) : point['date_to'],
       isFavorite: point['is_favorite'],
       basePrice: point['base_price'],
-      destinations: point['destination']
+      //destinations: point['destination']
     };
 
     delete adaptedPoint['date_from'];
     delete adaptedPoint['date_to'];
     delete adaptedPoint['is_favorite'];
     delete adaptedPoint['base_price'];
-    delete adaptedPoint['destination'];
+    //delete adaptedPoint['destination'];
 
     return adaptedPoint;
   }
