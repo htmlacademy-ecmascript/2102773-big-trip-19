@@ -1,5 +1,5 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-import { POINT_TYPES, POINT_TYPES_DICTIONARY } from '../const.js';
+import { POINT_TYPES } from '../const.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 
@@ -66,12 +66,15 @@ function createHeader (point, destinations) {
     <div class="event__type-list">
       <fieldset class="event__type-group">
         <legend class="visually-hidden">Event type</legend>
-        ${POINT_TYPES.map((typeOfList) =>
-      (`<div class="event__type-item">
-            <input id="event-type-${typeOfList}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${typeOfList}">
-            <label class="event__type-label  event__type-label--${typeOfList}" for="event-type-${typeOfList}-1">${POINT_TYPES_DICTIONARY[typeOfList]}</label>
+        ${POINT_TYPES.map((typeOfList) => {
+      const checkType = () => (typeOfList === type) ? 'checked' : '';
+      return (`<div class="event__type-item">
+            <input id="event-type-${typeOfList}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${typeOfList}" ${checkType()}>
+            <label class="event__type-label  event__type-label--${typeOfList}" for="event-type-${typeOfList}-1">${typeOfList}</label>
           </div>`
-      )).join('')}
+      );
+    }
+    ).join('')}
       </fieldset>
     </div>
   </div>
@@ -258,6 +261,7 @@ export default class EditFormView extends AbstractStatefulView {
         enableTime: true,
         dateFormat: 'j/m/y H:i',
         defaultDate: this._state.dateFrom,
+        maxDate: this._state.dateTo,
         onClose: this.#dateFromChangeHandler,
         'time_24hr': true,
       },

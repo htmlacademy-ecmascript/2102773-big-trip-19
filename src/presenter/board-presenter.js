@@ -4,6 +4,7 @@ import TripEventsView from '../view/trip-events-list-view.js';
 import SortView from '../view/sort-view.js';
 import ListEmptyView from '../view/list-empty-view.js';
 import LoadingView from '../view/loading-view.js';
+import LoadingErrorView from '../view/loading-error-view.js';
 import TripInfoView from '../view/trip-info-view.js';
 import TripPointPresenter from './trip-point-presenter.js';
 import NewPointPresenter from './new-point-presenter.js';
@@ -22,6 +23,8 @@ export default class BoardPresenter {
   #boardContainer = null;
   #pointsModel = null;
   #loadingComponent = new LoadingView();
+  #tripInfoComponent = null;
+  #loadingErrorComponent = new LoadingErrorView();
   #filterModel = null;
   #boardComponent = new TripEventsView();
   #sortComponent = null;
@@ -31,6 +34,7 @@ export default class BoardPresenter {
   #currentSortType = SortType.DAY;
   #filterType = FilterType.EVERYTHING;
   #isLoading = true;
+  #isLoadingError = false;
   #uiBlocker = new UiBlocker({
     lowerLimit: TimeLimit.LOWER_LIMIT,
     upperLimit: TimeLimit.UPPER_LIMIT
@@ -42,7 +46,6 @@ export default class BoardPresenter {
     this.#boardContainer = boardContainer;
     this.#pointsModel = pointsModel;
     this.#filterModel = filterModel;
-
 
     this.#newPointPresenter = new NewPointPresenter({
       pointListContainer: this.#boardComponent.element,
@@ -144,6 +147,9 @@ export default class BoardPresenter {
         remove(this.#loadingComponent);
         this.#renderBoard();
         break;
+      case UpdateType.INIT_ERROR:
+        this.#isLoadingError = true;
+        break;
     }
   };
 
@@ -183,8 +189,13 @@ export default class BoardPresenter {
     render(this.#emptyListComponent, this.#boardContainer);
   }
 
-  #renderTripInfo () {
-    render(new TripInfoView({point: this.points}), this.#infoContainer, RenderPosition.AFTERBEGIN);
+  #renderTripInfo (points, offers, destinations) {
+    this.#tripInfoComponent = new TripInfoView({
+      point: points,
+      offersByType: offers,
+      destinations: destinations,
+    });
+    render (this.#tripInfoComponent, this.#infoContainer, RenderPosition.AFTERBEGIN);
   }
 
   #renderPoints(points, offers, destinations) {
@@ -195,11 +206,16 @@ export default class BoardPresenter {
     render(this.#loadingComponent, this.#boardContainer);
   }
 
+  #renderLoadingError() {
+    render(this.#loadingErrorComponent, this.#boardContainer);
+  }
+
   #clearBoard({resetSortType = false} = {}) {
     this.#pointPresenter.forEach((presenter) => presenter.destroy());
     this.#pointPresenter.clear();
     this.#newPointPresenter.destroy();
     remove(this.#sortComponent);
+    remove(this.#tripInfoComponent);
 
     if (this.#emptyListComponent) {
       remove(this.#emptyListComponent);
@@ -212,26 +228,30 @@ export default class BoardPresenter {
     }
   }
 
-
   #renderBoard() {
+    const offers = this.offers;
+    const destinations = this.destinations;
+    const points = this.points;
+    const pointsCount = points.length;
+
     render(this.#boardComponent, this.#boardContainer);
 
     if (this.#isLoading) {
       this.#renderLoading();
       return;
     }
-    const offers = this.offers;
-    const destinations = this.destinations;
-    const points = this.points;
-    const pointsCount = points.length;
+
+    if (this.#isLoadingError) {
+      this.#renderLoadingError();
+      return;
+    }
 
     if (pointsCount === 0) {
       this.#renderEmptyList();
       return;
     }
 
-    //this.#renderTripInfo();
-
+    this.#renderTripInfo(points, offers, destinations);
     this.#renderSort();
     this.#renderPoints(points, offers, destinations);
   }

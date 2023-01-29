@@ -37,6 +37,7 @@ export default class PointsModel extends Observable {
       this.#points = [];
       this.#offers = [];
       this.#destinations = [];
+      this._notify(UpdateType.INIT_ERROR);
     }
     this._notify(UpdateType.INIT);
   }
@@ -95,14 +96,12 @@ export default class PointsModel extends Observable {
       dateTo: point['date_to'] !== null ? new Date(point['date_to']) : point['date_to'],
       isFavorite: point['is_favorite'],
       basePrice: point['base_price'],
-      //destinations: point['destination']
     };
 
     delete adaptedPoint['date_from'];
     delete adaptedPoint['date_to'];
     delete adaptedPoint['is_favorite'];
     delete adaptedPoint['base_price'];
-    //delete adaptedPoint['destination'];
 
     return adaptedPoint;
   }

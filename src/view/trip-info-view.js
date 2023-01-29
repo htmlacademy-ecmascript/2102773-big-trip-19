@@ -1,7 +1,8 @@
 import AbstractView from '../framework/view/abstract-view.js';
 import {humanizePointDate} from '../utils/data.js';
 
-function createTripInfoTemplate(point) {
+function createTripInfoTemplate(point, offersByType, destinations) {
+
   const start = humanizePointDate(point[0].dateFrom);
   const finish = humanizePointDate(point[point.length - 1].dateTo);
 
@@ -15,9 +16,11 @@ function createTripInfoTemplate(point) {
 
   const tripPointsName = [];
   for (let i = 0; i < point.length; i++) {
-    const pointTypeDestination = point[i].destinations;
-    tripPointsName.push(pointTypeDestination.name);
+    const pointTypeDestination = point[i].destination;
+    const pointDestination = destinations.find((destination) => destination.id === pointTypeDestination);
+    tripPointsName.push(pointDestination.name);
   }
+
 
   function createPointsInfo () {
     if (tripPointsName.length > 3) {
@@ -41,13 +44,17 @@ function createTripInfoTemplate(point) {
 
 export default class TripInfoView extends AbstractView {
   #point = null;
+  #offersByType = null;
+  #destinations = null;
 
-  constructor ({point}) {
+  constructor ({point, offersByType, destinations}) {
     super();
     this.#point = point;
+    this.#offersByType = offersByType;
+    this.#destinations = destinations;
   }
 
   get template() {
-    return createTripInfoTemplate(this.#point);
+    return createTripInfoTemplate(this.#point, this.#offersByType, this.#destinations);
   }
 }

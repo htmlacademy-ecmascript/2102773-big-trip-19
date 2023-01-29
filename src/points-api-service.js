@@ -60,13 +60,12 @@ export default class PointsApiService extends ApiService {
 
   #adaptToServer(point) {
     const adaptedPoint = {...point,
-      'date_from': point.dateFrom instanceof Date ? point.dateFrom.toISOString() : null, // На сервере дата хранится в ISO формате
-      'date_to': point.dateTo instanceof Date ? point.dateTo.toISOString() : null, // На сервере дата хранится в ISO формате
+      'date_from': point.dateFrom instanceof Date ? point.dateFrom.toISOString() : null,
+      'date_to': point.dateTo instanceof Date ? point.dateTo.toISOString() : null,
       'base_price': Number(point.basePrice),
       'is_favorite': point.isFavorite,
     };
 
-    // Ненужные ключи мы удаляем
     delete adaptedPoint.dateFrom;
     delete adaptedPoint.dateTo;
     delete adaptedPoint.basePrice;
