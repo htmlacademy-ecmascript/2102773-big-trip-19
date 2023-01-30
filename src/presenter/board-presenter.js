@@ -74,6 +74,10 @@ export default class BoardPresenter {
     return filteredPoints;
   }
 
+  get pointsForInfo() {
+    return this.#pointsModel.points.sort(sortPointByDate);
+  }
+
   get offers() {
     return this.#pointsModel.offers;
   }
@@ -233,6 +237,7 @@ export default class BoardPresenter {
     const destinations = this.destinations;
     const points = this.points;
     const pointsCount = points.length;
+    const pointsForInfo = this.pointsForInfo;
 
     render(this.#boardComponent, this.#boardContainer);
 
@@ -251,7 +256,7 @@ export default class BoardPresenter {
       return;
     }
 
-    this.#renderTripInfo(points, offers, destinations);
+    this.#renderTripInfo(pointsForInfo, offers, destinations);
     this.#renderSort();
     this.#renderPoints(points, offers, destinations);
   }
