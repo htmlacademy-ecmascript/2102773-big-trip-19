@@ -1,75 +1,96 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-import { POINT_TYPES, NEW_POINT } from '../mock/const.js';
-import { mockOffersByType as offersByType, mockDestinations as destinations } from '../mock/data.js';
+import { POINT_TYPES, NEW_POINT } from '../const.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 
-const destinationsName = [];
-destinations.forEach((destination) => destinationsName.push(destination.name));
+function createNewFormTemplate(data, offersByType, destinations) {
+  const destinationsName = [];
+  destinations.forEach((destination) => destinationsName.push(destination.name));
 
-function createNewFormTemplate(data) {
   const validName = `^(${destinationsName.join('|')})$`;
 
-  const pointDestination = data.destinations;
-  const pointDescription = pointDestination.description;
-  const pointName = pointDestination.name;
+  const pointTypeDestination = data.destination;
+  const pointDestination = destinations.find((destination) => destination.id === pointTypeDestination);
 
   const pointTypeAllOffers = offersByType.find((offer) => offer.type === data.type);
-  const pointTypesPicture = pointDestination.picture;
+  const pointTypeOffer = data.offers;
 
-  const {type, dateFrom, dateTo, basePrice} = data;
+  const {type, dateFrom, dateTo, basePrice, isDisabled, isSaving} = data;
+  const isSubmitDisabled = (((dateFrom && dateTo) === undefined) || ((dateFrom && dateTo) === ''));
+
+  function createPointName () {
+    if (pointTypeDestination && pointDestination) {
+      const pointName = pointDestination.name;
+      return pointName;
+    }
+    else {return '';}
+  }
 
   function createDestination () {
-    return pointDestination ? (`<section class="event__section  event__section--destination">
+    if (pointTypeDestination && pointDestination) {
+      const pointDescription = pointDestination.description;
+      const pointTypesPictures = pointDestination.pictures;
+      return (`<section class="event__section  event__section--destination">
     <h3 class="event__section-title  event__section-title--destination">Destination</h3>
     <p class="event__destination-description">${pointDescription}</p>
 
     <div class="event__photos-container">
       <div class="event__photos-tape">
-        ${pointTypesPicture.map(({src, description}) =>
-        (`<img class="event__photo" src="${src}" alt="${description}">`
-        )).join('')}
+        ${pointTypesPictures.map(({src, description}) =>
+          (`<img class="event__photo" src="${src}" alt="${description}">`
+          )).join('')}
       </div>
     </div>
-  </section>`) : '';
+  </section>`);}
+    else {return '';}
   }
 
   function createOffers () {
     return pointTypeAllOffers ? (`<section class="event__section  event__section--offers">
     <h3 class="event__section-title  event__section-title--offers">Offers</h3>
     <div class="event__available-offers">
-    ${pointTypeAllOffers.offers.map(({title, price, id}) =>
-        (`<div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${id}-1" type="checkbox" name="event-offer-${id}" value="${id}">
+    ${pointTypeAllOffers.offers.map(({title, price, id}) => {
+        const checked = pointTypeOffer.includes(id) ? 'checked' : '';
+        return (`<div class="event__offer-selector">
+        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${id}-1" type="checkbox" name="event-offer-${id}"
+        value="${id}" ${checked} ${isDisabled ? 'disabled' : ''}>
       <label class="event__offer-label" for="event-offer-${id}-1">
         <span class="event__offer-title">${title}</span>
         &plus;&euro;&nbsp;
         <span class="event__offer-price">${price}</span>
       </label>
-    </div>`)
+    </div>`);
+      }
       ).join('')}
     </div>
-  </section>`) : '';
+  </section>`) : (`<section class="event__section  event__section--offers" hidden>
+  <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+  <div class="event__available-offers">
+  </section>`);
   }
 
   function createHeader () {
+
     return (`<header class="event__header">
     <div class="event__type-wrapper">
       <label class="event__type  event__type-btn" for="event-type-toggle-1">
         <span class="visually-hidden">Choose event type</span>
         <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
       </label>
-      <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
+      <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox" ${isDisabled ? 'disabled' : ''}>
 
       <div class="event__type-list">
         <fieldset class="event__type-group">
           <legend class="visually-hidden">Event type</legend>
-          ${POINT_TYPES.map((typeOfList) =>
-        (`<div class="event__type-item">
-              <input id="event-type-${typeOfList}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${typeOfList}">
-              <label class="event__type-label  event__type-label--${typeOfList}" for="event-type-${typeOfList}-1">${typeOfList}</label>
-            </div>`
-        )).join('')}
+          ${POINT_TYPES.map((typeOfList) => {
+        const checkType = () => (typeOfList === type) ? 'checked' : '';
+        return (`<div class="event__type-item">
+            <input id="event-type-${typeOfList}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${typeOfList}" ${checkType()}>
+            <label class="event__type-label  event__type-label--${typeOfList}" for="event-type-${typeOfList}-1">${typeOfList}</label>
+          </div>`
+        );
+      }
+      ).join('')}
         </fieldset>
       </div>
     </div>
@@ -78,8 +99,8 @@ function createNewFormTemplate(data) {
       <label class="event__label  event__type-output" for="event-destination-1">
         ${type}
       </label>
-      <input class="event__input  event__input--destination" id="event-destination-1" value="${pointName}" placeholder="Название города" type="text" autocomplete="off"
-      name="event-destination" required pattern="${validName}" list="destination-list-1">
+      <input class="event__input  event__input--destination" id="event-destination-1" value="${createPointName()}" placeholder="Название города" type="text" autocomplete="off"
+      name="event-destination" required pattern="${validName}" list="destination-list-1" ${isDisabled ? 'disabled' : ''}>
       <datalist id="destination-list-1">
       ${destinationsName.map((city) => (`<option value="${city}"></option>`)).join('')}
       </datalist>
@@ -87,10 +108,10 @@ function createNewFormTemplate(data) {
 
     <div class="event__field-group  event__field-group--time">
       <label class="visually-hidden" for="event-start-time-1">From</label>
-      <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dateFrom}">
+      <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dateFrom}" ${isDisabled ? 'disabled' : ''}>
       &mdash;
       <label class="visually-hidden" for="event-end-time-1">To</label>
-      <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dateTo}">
+      <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dateTo}" ${isDisabled ? 'disabled' : ''}>
     </div>
 
     <div class="event__field-group  event__field-group--price">
@@ -98,10 +119,12 @@ function createNewFormTemplate(data) {
         <span class="visually-hidden">Price</span>
         &euro;
       </label>
-      <input class="event__input  event__input--price" id="event-price-1" type="number" min="0" name="event-price" value="${basePrice}">
+      <input class="event__input  event__input--price" id="event-price-1" type="number" min="1" required name="event-price" value="${basePrice}" ${isDisabled ? 'disabled' : ''}>
     </div>
 
-    <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
+    <button class="event__save-btn  btn  btn--blue" type="submit" ${isSubmitDisabled || isDisabled ? 'disabled' : ''}>
+    ${isSaving ? 'Saving...' : 'Save'}
+    </button>
     <button class="event__reset-btn" type="reset">Cancel</button>
   </header>`);
   }
@@ -120,19 +143,23 @@ function createNewFormTemplate(data) {
 
 export default class AddNewFormView extends AbstractStatefulView {
   #handleFormSubmit = null;
+  #offersByType = null;
+  #destinations = null;
   #handleCancelClick = null;
   #datepicker = null;
 
-  constructor ({point = NEW_POINT, onFormSubmit, onCancelClick}) {
+  constructor ({point = NEW_POINT, offersByType, destinations, onFormSubmit, onCancelClick}) {
     super();
     this._setState(AddNewFormView.parsePointToState(point));
+    this.#offersByType = offersByType;
+    this.#destinations = destinations;
     this.#handleFormSubmit = onFormSubmit;
     this.#handleCancelClick = onCancelClick;
     this._restoreHandlers();
   }
 
   get template() {
-    return createNewFormTemplate(this._state);
+    return createNewFormTemplate(this._state, this.#offersByType, this.#destinations);
   }
 
   removeElement() {
@@ -157,6 +184,8 @@ export default class AddNewFormView extends AbstractStatefulView {
     this.element.querySelector('.event__input--destination').addEventListener('input', this.#nameChangeHandler);
     this.element.querySelector('.event__input--price').addEventListener('input', this.#priceInputHandler);
 
+    this.element.querySelector('.event__available-offers').addEventListener('change', this.#offersChangeHandler);
+
     this.#setDatepicker();
   }
 
@@ -164,22 +193,42 @@ export default class AddNewFormView extends AbstractStatefulView {
     evt.preventDefault();
     this.updateElement({
       type: evt.target.value,
+      offers: [],
     });
   };
 
   #nameChangeHandler = (evt) => {
     evt.preventDefault();
-    const pointDestination = destinations.find((destination) => destination.name === evt.target.value);
+    const pointDestination = this.#destinations.find((destination) => destination.name === evt.target.value);
 
     if (pointDestination !== undefined) {
       this.updateElement({
-        destinations: {
-          ...this._state.destinations,
-          name: evt.target.value,
-          id: pointDestination.id,
-          description: pointDestination.description,
-          picture: pointDestination.picture,
-        }
+        destination: pointDestination.id,
+      });
+    }
+  };
+
+  #offersChangeHandler = (evt) => {
+    evt.preventDefault();
+    const index = this._state.offers.findIndex((offers) => String(offers) === evt.target.value);
+
+    if (index !== -1) {
+      this._state.offers = [
+        ...this._state.offers.slice(0, index),
+        ...this._state.offers.slice(index + 1),
+      ];
+    }
+    else {
+      this._state.offers = [
+        Number(evt.target.value),
+        ...this._state.offers,
+      ];
+    }
+
+    if (this._state.offers) {
+      this.updateElement({
+        ...this._state,
+        offers: this._state.offers,
       });
     }
   };
@@ -241,11 +290,15 @@ export default class AddNewFormView extends AbstractStatefulView {
 
   static parsePointToState(point) {
     return {...point,
+      isDisabled: false,
+      isSaving: false,
     };
   }
 
   static parseStateToPoint(state) {
-    return {...state,
-    };
+    const point = {...state};
+    delete point.isDisabled;
+    delete point.isSaving;
+    return point;
   }
 }

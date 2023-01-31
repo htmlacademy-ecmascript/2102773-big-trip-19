@@ -1,5 +1,17 @@
 const POINT_TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
 
+const POINT_TYPES_DICTIONARY = {
+  'taxi': 'Taxi',
+  'bus': 'Bus',
+  'train': 'Train',
+  'ship': 'Ship',
+  'drive': 'Drive',
+  'flight': 'Flight',
+  'check-in': 'Check-in',
+  'sightseeing': 'Sightseeing',
+  'restaurant': 'Restaurant',
+};
+
 const FilterType = {
   EVERYTHING: 'everything',
   FUTURE: 'future',
@@ -23,31 +35,18 @@ const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
+  INIT: 'INIT',
+  INIT_ERROR: 'INIT_ERROR',
 };
 
 const NEW_POINT = {
   basePrice: '',
   dateFrom: '',
   dateTo: '',
-  destinations: {
-    id: '',
-    description: '',
-    name: '',
-    picture: [
-      {
-        src: '',
-        description: '',
-      },
-    ]
-  },
+  destination: null,
   isFavorite: false,
-  offers: [
-    {
-      type: '',
-      id: []
-    },
-  ],
-  type: POINT_TYPES[1],
+  offers: [],
+  type: POINT_TYPES[0],
 };
 
-export { POINT_TYPES, FilterType, SortType, UserAction, UpdateType, NEW_POINT };
+export { POINT_TYPES, FilterType, SortType, UserAction, UpdateType, NEW_POINT, POINT_TYPES_DICTIONARY };
