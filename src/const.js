@@ -1,17 +1,5 @@
 const POINT_TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
 
-const POINT_TYPES_DICTIONARY = {
-  'taxi': 'Taxi',
-  'bus': 'Bus',
-  'train': 'Train',
-  'ship': 'Ship',
-  'drive': 'Drive',
-  'flight': 'Flight',
-  'check-in': 'Check-in',
-  'sightseeing': 'Sightseeing',
-  'restaurant': 'Restaurant',
-};
-
 const FilterType = {
   EVERYTHING: 'everything',
   FUTURE: 'future',
@@ -49,4 +37,4 @@ const NEW_POINT = {
   type: POINT_TYPES[0],
 };
 
-export { POINT_TYPES, FilterType, SortType, UserAction, UpdateType, NEW_POINT, POINT_TYPES_DICTIONARY };
+export { POINT_TYPES, FilterType, SortType, UserAction, UpdateType, NEW_POINT };
