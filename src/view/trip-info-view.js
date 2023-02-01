@@ -11,7 +11,7 @@ function countPrice(points) {
 
 function countOffersPrice (points, offersByType) {
   let offersTotalPrice;
-  const offersPriceArray = [];
+  const offersPrices = [];
 
   for (const point of points) {
     const pointTypeOffer = point.offers;
@@ -20,17 +20,17 @@ function countOffersPrice (points, offersByType) {
     if (pointTypeAllOffers && pointTypeOffer.length !== 0) {
       pointTypeAllOffers.offers.map(({price, id}) => {
         if (pointTypeOffer.includes(id)) {
-          offersPriceArray.push(price);
-          return offersPriceArray;
+          offersPrices.push(price);
+          return offersPrices;
         }
       }
       );
     }
-    if (offersPriceArray.length === 0) {
+    if (offersPrices.length === 0) {
       offersTotalPrice = 0;
     }
     else {
-      offersTotalPrice = offersPriceArray.reduce((total, amount) => total + amount);
+      offersTotalPrice = offersPrices.reduce((total, amount) => total + amount);
     }
   }
   return offersTotalPrice;
@@ -57,37 +57,37 @@ function createPointsNameInfo (points, destinations) {
   }
 }
 
-function createTripInfoTemplate(point, offersByType, destinations) {
+function createTripInfoTemplate(points, offersByType, destinations) {
 
-  const start = humanizePointDate(point[0].dateFrom);
-  const finish = humanizePointDate(point[point.length - 1].dateTo);
+  const start = humanizePointDate(points[0].dateFrom);
+  const finish = humanizePointDate(points[points.length - 1].dateTo);
 
   return (`<section class="trip-main__trip-info  trip-info">
   <div class="trip-info__main">
-    ${createPointsNameInfo(point, destinations)}
+    ${createPointsNameInfo(points, destinations)}
 
     <p class="trip-info__dates">${start}&nbsp;&mdash;&nbsp;${finish}</p>
   </div>
 
   <p class="trip-info__cost">
-    Total: &euro;&nbsp;<span class="trip-info__cost-value">${countPrice(point) + countOffersPrice(point, offersByType)}</span>
+    Total: &euro;&nbsp;<span class="trip-info__cost-value">${countPrice(points) + countOffersPrice(points, offersByType)}</span>
   </p>
 </section>`);
 }
 
 export default class TripInfoView extends AbstractView {
-  #point = null;
+  #points = null;
   #offersByType = null;
   #destinations = null;
 
-  constructor ({point, offersByType, destinations}) {
+  constructor ({points, offersByType, destinations}) {
     super();
-    this.#point = point;
+    this.#points = points;
     this.#offersByType = offersByType;
     this.#destinations = destinations;
   }
 
   get template() {
-    return createTripInfoTemplate(this.#point, this.#offersByType, this.#destinations);
+    return createTripInfoTemplate(this.#points, this.#offersByType, this.#destinations);
   }
 }

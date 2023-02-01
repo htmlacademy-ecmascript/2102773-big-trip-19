@@ -195,7 +195,7 @@ export default class BoardPresenter {
 
   #renderTripInfo (points, offers, destinations) {
     this.#tripInfoComponent = new TripInfoView({
-      point: points,
+      points: points,
       offersByType: offers,
       destinations: destinations,
     });
