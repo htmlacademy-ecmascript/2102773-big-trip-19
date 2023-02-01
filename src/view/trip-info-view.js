@@ -1,5 +1,5 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import {humanizePointDate} from '../utils/data.js';
+import {humanizePointDate, humanizeFinishPointDate} from '../utils/data.js';
 
 function countPrice(points) {
   let priceSum = 0;
@@ -60,7 +60,7 @@ function createPointsNameInfo (points, destinations) {
 function createTripInfoTemplate(points, offersByType, destinations) {
 
   const start = humanizePointDate(points[0].dateFrom);
-  const finish = humanizePointDate(points[points.length - 1].dateTo);
+  const finish = humanizeFinishPointDate(points[0].dateFrom, points[points.length - 1].dateTo);
 
   return (`<section class="trip-main__trip-info  trip-info">
   <div class="trip-info__main">

@@ -84,7 +84,7 @@ function createHeader (point, destinations) {
     ${type}
     </label>
 
-    <input class="event__input  event__input--destination" id="event-destination-1" type="text" autocomplete="off" required pattern="${validName}"
+    <input class="event__input  event__input--destination" id="event-destination-1" placeholder="Сity name" type="text" autocomplete="off" required pattern="${validName}"
     name="event-destination" value="${pointName}" list="destination-list-1" ${isDisabled ? 'disabled' : ''}>
     <datalist id="destination-list-1">
     ${destinationsName.map((city) => (`<option value="${city}"></option>`)).join('')}
