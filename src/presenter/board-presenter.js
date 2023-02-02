@@ -86,8 +86,8 @@ export default class BoardPresenter {
     return this.#pointsModel.destinations;
   }
 
-  init({offers, destinations}) {
-    this.#renderBoard(offers, destinations);
+  init() {
+    this.#renderBoard();
   }
 
   createPoint({offers, destinations}) {

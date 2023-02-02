@@ -8,6 +8,7 @@ dayjs.extend(isSameOrBefore);
 dayjs.extend(isSameOrAfter);
 
 const DATE_FORMAT = 'MMM DD';
+const DATE_FORMAT_DAY_ONLY = 'DD';
 const TIME_FORMAT = 'HH:mm';
 const DATE_FORMAT_ADD = 'DD/MM/YY HH:mm';
 const DIFF_FORMAT_MINUTES = 'mm[M]';
@@ -19,6 +20,10 @@ const today = dayjs();
 
 function humanizePointDate(date) {
   return date ? dayjs(date).format(DATE_FORMAT) : '';
+}
+
+function humanizeFinishPointDate(dateFrom, dateTo) {
+  return dayjs(dateFrom).isSame(dateTo, 'M') ? dayjs(dateTo).format(DATE_FORMAT_DAY_ONLY) : dayjs(dateTo).format(DATE_FORMAT);
 }
 
 function humanizePointTime(time) {
@@ -97,4 +102,4 @@ function sortPointByDate(pointA, pointB) {
 }
 
 export {humanizePointDate, humanizePointTime, calculateTimeDifference, humanizePointAddDate, isPointPresent,
-  isPointPast, isPointFuture, sortPointByPrice, sortPointByTime, sortPointByDate};
+  isPointPast, isPointFuture, sortPointByPrice, sortPointByTime, sortPointByDate, humanizeFinishPointDate};

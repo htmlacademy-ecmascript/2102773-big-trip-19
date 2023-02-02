@@ -18,14 +18,6 @@ function createNewFormTemplate(data, offersByType, destinations) {
   const {type, dateFrom, dateTo, basePrice, isDisabled, isSaving} = data;
   const isSubmitDisabled = (((dateFrom && dateTo) === undefined) || ((dateFrom && dateTo) === ''));
 
-  function createPointName () {
-    if (pointTypeDestination && pointDestination) {
-      const pointName = pointDestination.name;
-      return pointName;
-    }
-    else {return '';}
-  }
-
   function createDestination () {
     if (pointTypeDestination && pointDestination) {
       const pointDescription = pointDestination.description;
@@ -42,11 +34,11 @@ function createNewFormTemplate(data, offersByType, destinations) {
       </div>
     </div>
   </section>`);}
-    else {return '';}
+    return '';
   }
 
   function createOffers () {
-    return pointTypeAllOffers ? (`<section class="event__section  event__section--offers">
+    return pointTypeAllOffers && pointTypeAllOffers.offers.length !== 0 ? (`<section class="event__section  event__section--offers">
     <h3 class="event__section-title  event__section-title--offers">Offers</h3>
     <div class="event__available-offers">
     ${pointTypeAllOffers.offers.map(({title, price, id}) => {
@@ -99,7 +91,7 @@ function createNewFormTemplate(data, offersByType, destinations) {
       <label class="event__label  event__type-output" for="event-destination-1">
         ${type}
       </label>
-      <input class="event__input  event__input--destination" id="event-destination-1" value="${createPointName()}" placeholder="Название города" type="text" autocomplete="off"
+      <input class="event__input  event__input--destination" id="event-destination-1" value="${(pointTypeDestination && pointDestination) ? pointDestination.name : ''}" placeholder="Сity name" type="text" autocomplete="off"
       name="event-destination" required pattern="${validName}" list="destination-list-1" ${isDisabled ? 'disabled' : ''}>
       <datalist id="destination-list-1">
       ${destinationsName.map((city) => (`<option value="${city}"></option>`)).join('')}
@@ -108,10 +100,10 @@ function createNewFormTemplate(data, offersByType, destinations) {
 
     <div class="event__field-group  event__field-group--time">
       <label class="visually-hidden" for="event-start-time-1">From</label>
-      <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dateFrom}" ${isDisabled ? 'disabled' : ''}>
+      <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${(dateFrom) ? dateFrom : ''}" ${isDisabled ? 'disabled' : ''}>
       &mdash;
       <label class="visually-hidden" for="event-end-time-1">To</label>
-      <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dateTo}" ${isDisabled ? 'disabled' : ''}>
+      <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${(dateTo) ? dateTo : ''}" ${isDisabled ? 'disabled' : ''}>
     </div>
 
     <div class="event__field-group  event__field-group--price">
@@ -270,6 +262,7 @@ export default class AddNewFormView extends AbstractStatefulView {
         enableTime: true,
         dateFormat: 'j/m/y H:i',
         defaultDate: this._state.dateFrom,
+        maxDate: this._state.dateTo,
         onClose: this.#dateFromChangeHandler,
         'time_24hr': true,
       },
